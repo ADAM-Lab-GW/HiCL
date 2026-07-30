@@ -10,3 +10,4 @@ pillow>=8.0.0
 tqdm
 thop
 requests>=2.31.0
+seaborn

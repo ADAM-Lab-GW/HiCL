@@ -1,0 +1,83 @@
+2026-07-30 07:29:10,810 - INFO - ================================================================================
+2026-07-30 07:29:20,661 - INFO - Task 0 ([0, 1]): 10000 train, 2000 test samples
+2026-07-30 07:29:28,410 - INFO - Task 1 ([2, 3]): 10000 train, 2000 test samples
+2026-07-30 07:29:36,029 - INFO - Task 2 ([4, 5]): 10000 train, 2000 test samples
+2026-07-30 07:29:43,678 - INFO - Task 3 ([6, 7]): 10000 train, 2000 test samples
+2026-07-30 07:29:51,323 - INFO - Task 4 ([8, 9]): 10000 train, 2000 test samples
+2026-07-30 07:29:51,846 - INFO -   - LeNet feature extractor output dimension: 4096
+2026-07-30 07:29:53,191 - INFO - Model parameters (DG-Gated): 44,039,498
+2026-07-30 07:29:53,194 - INFO - 
+================================================================================
+2026-07-30 07:29:53,194 - INFO - PHASE 1: TRAINING HIPPOCAMPAL EXPERTS WITH DISTILLATION
+2026-07-30 07:29:53,194 - INFO - ================================================================================
+2026-07-30 07:29:53,196 - INFO - 
+Training Expert 0...
+2026-07-30 07:29:53,196 - INFO -   Trainable parameters: 19,630,274
+2026-07-30 07:38:43,931 - INFO -   Epoch 12 | Test Acc: 97.15% (Best: 97.70%)
+2026-07-30 07:39:09,684 - INFO -   - Total parameters: 19,630,274
+2026-07-30 07:39:09,684 - INFO -   - Non-zero Fisher values: 2,577,893
+2026-07-30 07:39:09,685 - INFO -   - Coverage ratio: 0.131
+2026-07-30 07:39:09,685 - INFO -   - Fisher value range: [0.00e+00, 1.05e-03]
+2026-07-30 07:39:09,685 - INFO -   - Fisher mean/std: 1.84e-08/1.10e-06
+2026-07-30 07:39:09,686 - INFO -   - feature_extractor: 263,114/375,872 (0.700)
+2026-07-30 07:39:09,686 - INFO -   - hippocampal_experts: 2,314,521/19,254,144 (0.120)
+2026-07-30 07:39:09,686 - INFO -   - output_layers: 258/258 (1.000)
+2026-07-30 07:39:09,703 - INFO - 
+Training Expert 1...
+2026-07-30 07:39:09,704 - INFO -   Trainable parameters: 19,630,274
+2026-07-30 07:39:09,704 - INFO -   Using distillation from 1 previous expert(s)
+2026-07-30 07:42:10,671 - INFO - DEBUG: Generating post-epoch logs for Expert 1, Epoch 1
+2026-07-30 07:42:10,696 - INFO - [Epoch 1] Pull sim: 0.9920, Pull dist: 0.0080, Pull violations: 0.0000, Push active: 1.0000
+2026-07-30 07:42:10,723 - INFO - [Epoch 1] DG Sparsity - Target: 0.030, Actual: 0.171, Error: 0.141
+2026-07-30 07:42:10,724 - INFO - [Epoch 1] Memory - Total replay: 400, Avg per task: 80.0
+2026-07-30 07:42:10,724 - INFO - [Epoch 1] Learning rate: 0.00e+00
+2026-07-30 07:47:07,222 - INFO - DEBUG: Generating post-epoch logs for Expert 1, Epoch 2
+2026-07-30 07:47:07,233 - INFO - [Epoch 2] Pull sim: 0.9948, Pull dist: 0.0052, Pull violations: 0.0000, Push active: 1.0000
+2026-07-30 07:47:07,264 - INFO - [Epoch 2] DG Sparsity - Target: 0.030, Actual: 0.147, Error: 0.117
+2026-07-30 07:47:07,264 - INFO - [Epoch 2] Memory - Total replay: 400, Avg per task: 80.0
+2026-07-30 07:47:07,264 - INFO - [Epoch 2] Learning rate: 9.83e-04
+2026-07-30 07:50:32,725 - INFO - DEBUG: Generating post-epoch logs for Expert 1, Epoch 3
+2026-07-30 07:50:32,735 - INFO - [Epoch 3] Pull sim: 0.9897, Pull dist: 0.0103, Pull violations: 0.0000, Push active: 1.0000
+2026-07-30 07:50:32,763 - INFO - [Epoch 3] DG Sparsity - Target: 0.030, Actual: 0.138, Error: 0.108
+2026-07-30 07:50:32,763 - INFO - [Epoch 3] Memory - Total replay: 400, Avg per task: 80.0
+2026-07-30 07:50:32,763 - INFO - [Epoch 3] Learning rate: 6.70e-05
+2026-07-30 07:53:19,572 - INFO - DEBUG: Generating post-epoch logs for Expert 1, Epoch 4
+2026-07-30 07:53:19,583 - INFO - [Epoch 4] Pull sim: 0.9844, Pull dist: 0.0156, Pull violations: 0.0000, Push active: 1.0000
+2026-07-30 07:53:19,612 - INFO - [Epoch 4] DG Sparsity - Target: 0.030, Actual: 0.129, Error: 0.099
+2026-07-30 07:53:19,612 - INFO - [Epoch 4] Memory - Total replay: 400, Avg per task: 80.0
+2026-07-30 07:53:19,612 - INFO - [Epoch 4] Learning rate: 8.54e-04
+2026-07-30 07:58:15,811 - INFO - DEBUG: Generating post-epoch logs for Expert 1, Epoch 5
+2026-07-30 07:58:15,835 - INFO - [Epoch 5] Pull sim: 0.9949, Pull dist: 0.0051, Pull violations: 0.0000, Push active: 1.0000
+2026-07-30 07:58:15,910 - INFO - [Epoch 5] DG Sparsity - Target: 0.030, Actual: 0.079, Error: 0.049
+2026-07-30 07:58:15,910 - INFO - [Epoch 5] Memory - Total replay: 400, Avg per task: 80.0
+2026-07-30 07:58:15,911 - INFO - [Epoch 5] Learning rate: 2.50e-04
+2026-07-30 08:04:36,513 - INFO - DEBUG: Generating post-epoch logs for Expert 1, Epoch 6
+2026-07-30 08:04:36,538 - INFO - [Epoch 6] Pull sim: 0.9984, Pull dist: 0.0016, Pull violations: 0.0000, Push active: 1.0000
+2026-07-30 08:04:36,615 - INFO - [Epoch 6] DG Sparsity - Target: 0.030, Actual: 0.049, Error: 0.019
+2026-07-30 08:04:36,616 - INFO - [Epoch 6] Memory - Total replay: 400, Avg per task: 80.0
+2026-07-30 08:04:36,616 - INFO - [Epoch 6] Learning rate: 6.29e-04
+2026-07-30 08:09:42,306 - INFO - DEBUG: Generating post-epoch logs for Expert 1, Epoch 7
+2026-07-30 08:09:42,317 - INFO - [Epoch 7] Pull sim: 0.9988, Pull dist: 0.0012, Pull violations: 0.0000, Push active: 1.0000
+2026-07-30 08:09:42,344 - INFO - [Epoch 7] DG Sparsity - Target: 0.030, Actual: 0.039, Error: 0.009
+2026-07-30 08:09:42,344 - INFO - [Epoch 7] Memory - Total replay: 400, Avg per task: 80.0
+2026-07-30 08:09:42,344 - INFO - [Epoch 7] Learning rate: 5.00e-04
+2026-07-30 08:12:40,449 - INFO - DEBUG: Generating post-epoch logs for Expert 1, Epoch 8
+2026-07-30 08:12:40,478 - INFO - [Epoch 8] Pull sim: 0.9993, Pull dist: 0.0007, Pull violations: 0.0000, Push active: 1.0000
+2026-07-30 08:12:40,569 - INFO - [Epoch 8] DG Sparsity - Target: 0.030, Actual: 0.040, Error: 0.010
+2026-07-30 08:12:40,569 - INFO - [Epoch 8] Memory - Total replay: 400, Avg per task: 80.0
+2026-07-30 08:12:40,569 - INFO - [Epoch 8] Learning rate: 3.71e-04
+2026-07-30 08:18:06,747 - INFO - DEBUG: Generating post-epoch logs for Expert 1, Epoch 9
+2026-07-30 08:18:06,757 - INFO - [Epoch 9] Pull sim: 0.9990, Pull dist: 0.0010, Pull violations: 0.0000, Push active: 1.0000
+2026-07-30 08:18:06,786 - INFO - [Epoch 9] DG Sparsity - Target: 0.030, Actual: 0.028, Error: 0.002
+2026-07-30 08:18:06,786 - INFO - [Epoch 9] Memory - Total replay: 400, Avg per task: 80.0
+2026-07-30 08:18:06,787 - INFO - [Epoch 9] Learning rate: 7.50e-04
+2026-07-30 08:22:38,237 - INFO - DEBUG: Generating post-epoch logs for Expert 1, Epoch 10
+2026-07-30 08:22:38,248 - INFO - [Epoch 10] Pull sim: 0.9993, Pull dist: 0.0007, Pull violations: 0.0000, Push active: 1.0000
+2026-07-30 08:22:38,291 - INFO - [Epoch 10] DG Sparsity - Target: 0.030, Actual: 0.147, Error: 0.117
+2026-07-30 08:22:38,291 - INFO - [Epoch 10] Memory - Total replay: 400, Avg per task: 80.0
+2026-07-30 08:22:38,291 - INFO - [Epoch 10] Learning rate: 1.46e-04
+2026-07-30 08:27:48,926 - INFO - DEBUG: Generating post-epoch logs for Expert 1, Epoch 11
+2026-07-30 08:27:48,936 - INFO - [Epoch 11] Pull sim: 0.9995, Pull dist: 0.0005, Pull violations: 0.0000, Push active: 1.0000
+2026-07-30 08:27:48,972 - INFO - [Epoch 11] DG Sparsity - Target: 0.030, Actual: 0.151, Error: 0.121
+2026-07-30 08:27:48,972 - INFO - [Epoch 11] Memory - Total replay: 400, Avg per task: 80.0
+2026-07-30 08:27:48,972 - INFO - [Epoch 11] Learning rate: 9.33e-04

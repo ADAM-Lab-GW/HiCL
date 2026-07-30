@@ -1436,7 +1436,7 @@ def phase2_contrastive_tuning(model, train_loaders, device, args, log_dir):
         # === DIAGNOSTICS: log expert utilization and active loss fraction ===
         if epoch == 0 or (epoch+1) % 1 == 0:  # every epoch
             log_expert_utilization(gate_logits, epoch+1, log_dir)
-            log_active_loss_fraction(torch.stack(all_dg_outputs, dim=1), task_ids, model.dg_prototypes, args.contrastive_margin, epoch+1, log_dir)
+            log_active_loss_fraction(torch.stack(all_dg_outputs, dim=1), task_ids, model.dg_prototypes,log_dir, args.contrastive_margin, epoch+1)
         # === DIAGNOSTICS: plot contrastive similarity histogram ===
         plot_contrastive_similarity_histogram(torch.stack(all_dg_outputs, dim=1), task_ids, model.dg_prototypes, epoch+1, log_dir)
     # === DIAGNOSTICS: plot prototype distance matrix after Phase 2 ===
@@ -1661,7 +1661,7 @@ def calculate_routing_confidence_penalty(model, inputs, device, expert_id=None):
             # If no expert_id provided, return zero penalty
             return torch.tensor(0.0, device=device)
 
-def phase1_train_experts_sequentially(model, train_loaders, test_loaders, device, args):
+def phase1_train_experts_sequentially(model, train_loaders, test_loaders, device, args,log_dir):
     """
     MODIFIED Phase 1: Train experts independently with distillation from previous experts.
     The goal is to learn good initial weights for each expert while preserving knowledge.
@@ -2128,7 +2128,7 @@ def phase1_train_experts_sequentially(model, train_loaders, test_loaders, device
                         batch_task_ids = torch.full((sample_inputs.size(0),), expert_id, device=device)
                         
                         # Call log_active_loss_fraction with active prototypes
-                        log_active_loss_fraction(active_dg_stack, batch_task_ids, active_protos, margin=0.5, epoch=epoch+1, log_dir="./logs")
+                        log_active_loss_fraction(active_dg_stack, batch_task_ids, active_protos, log_dir, margin=0.5, epoch=epoch+1,)
         
         # Early stopping check
         if patience_counter >= patience:
@@ -2713,7 +2713,7 @@ def log_expert_utilization(gate_logits, epoch, log_dir):
     plt.savefig(os.path.join(log_dir, f"expert_utilization_epoch{epoch}.png"))
     plt.close()
 
-def log_active_loss_fraction(all_dg_outputs, task_ids, dg_prototypes, margin, epoch, log_dir):
+def log_active_loss_fraction(all_dg_outputs, task_ids, dg_prototypes,log_dir, margin, epoch):
     """
     Logs the pull and push diagnostics for the contrastive loss.
     Pull: mean similarity, mean distance, fraction below margin.
@@ -2723,7 +2723,7 @@ def log_active_loss_fraction(all_dg_outputs, task_ids, dg_prototypes, margin, ep
     import os
     import torch
     import torch.nn.functional as F
-    from corrected_evaluation import evaluate_baseline_model_standardized, evaluate_dg_gated_model_standardized
+    # from evaluation import evaluate_baseline_model_standardized, evaluate_dg_gated_model_standardized
     with torch.no_grad():
         dg_outputs_norm = F.normalize(all_dg_outputs, p=2, dim=2)
         prototypes_norm = F.normalize(dg_prototypes, p=2, dim=1)
@@ -3432,15 +3432,15 @@ def main():
     model.set_gating_strategy(args.gating_strategy)
     
     # === PHASE 1: Independent Expert Training with Online EMA Prototypes ===
-    phase1_train_experts_sequentially(model, train_loaders, test_loaders, device, args)
+    phase1_train_experts_sequentially(model, train_loaders, test_loaders, device, args,log_dir)
     
     # Prototypes are now computed online during Phase 1 using EMAs
     logging.info("✅ Online EMA prototypes computed during Phase 1 training")
     
     # === POST PHASE 1 DIAGNOSTICS ===
-    logging.info("\n" + "🔬" * 60)
-    logging.info("🔬 POST PHASE 1 DG PATTERN SEPARATION DIAGNOSTIC")
-    logging.info("🔬" * 60)
+    # logging.info("\n" + "🔬" * 60)
+    logging.info(" POST PHASE 1 DG PATTERN SEPARATION DIAGNOSTIC")
+    # logging.info("🔬" * 60)
     phase1_results = analyze_dg_pattern_separation(model, test_loaders, device, log_dir)
     
     # Save Phase 1 prototype plots

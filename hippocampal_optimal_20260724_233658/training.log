@@ -1,0 +1,33 @@
+2026-07-24 23:36:58,629 - INFO - ================================================================================
+2026-07-25 00:47:40,522 - INFO - Task 0 ([0, 1]): 10000 train, 2000 test samples
+2026-07-25 00:47:48,523 - INFO - Task 1 ([2, 3]): 10000 train, 2000 test samples
+2026-07-25 00:47:56,711 - INFO - Task 2 ([4, 5]): 10000 train, 2000 test samples
+2026-07-25 00:48:04,865 - INFO - Task 3 ([6, 7]): 10000 train, 2000 test samples
+2026-07-25 00:48:12,962 - INFO - Task 4 ([8, 9]): 10000 train, 2000 test samples
+2026-07-25 00:48:13,684 - INFO -   - LeNet feature extractor output dimension: 4096
+2026-07-25 00:48:15,039 - INFO - Model parameters (DG-Gated): 44,039,498
+2026-07-25 00:48:15,043 - INFO - 
+================================================================================
+2026-07-25 00:48:15,044 - INFO - PHASE 1: TRAINING HIPPOCAMPAL EXPERTS WITH DISTILLATION
+2026-07-25 00:48:15,044 - INFO - ================================================================================
+2026-07-25 00:48:15,068 - INFO - 
+Training Expert 0...
+2026-07-25 00:48:15,068 - INFO -   Trainable parameters: 19,630,274
+2026-07-25 00:57:02,874 - INFO -   Epoch 12 | Test Acc: 97.15% (Best: 97.70%)
+2026-07-25 00:57:14,430 - INFO -   - Total parameters: 19,630,274
+2026-07-25 00:57:14,430 - INFO -   - Non-zero Fisher values: 2,577,893
+2026-07-25 00:57:14,430 - INFO -   - Coverage ratio: 0.131
+2026-07-25 00:57:14,430 - INFO -   - Fisher value range: [0.00e+00, 1.05e-03]
+2026-07-25 00:57:14,430 - INFO -   - Fisher mean/std: 1.84e-08/1.10e-06
+2026-07-25 00:57:14,430 - INFO -   - feature_extractor: 263,114/375,872 (0.700)
+2026-07-25 00:57:14,430 - INFO -   - hippocampal_experts: 2,314,521/19,254,144 (0.120)
+2026-07-25 00:57:14,431 - INFO -   - output_layers: 258/258 (1.000)
+2026-07-25 00:57:14,438 - INFO - 
+Training Expert 1...
+2026-07-25 00:57:14,438 - INFO -   Trainable parameters: 19,630,274
+2026-07-25 00:57:14,438 - INFO -   Using distillation from 1 previous expert(s)
+2026-07-25 00:59:01,984 - INFO - DEBUG: Generating post-epoch logs for Expert 1, Epoch 1
+2026-07-25 00:59:02,009 - INFO - [Epoch 1] Pull sim: 0.9920, Pull dist: 0.0080, Pull violations: 0.0000, Push active: 1.0000
+2026-07-25 00:59:02,037 - INFO - [Epoch 1] DG Sparsity - Target: 0.030, Actual: 0.171, Error: 0.141
+2026-07-25 00:59:02,038 - INFO - [Epoch 1] Memory - Total replay: 400, Avg per task: 80.0
+2026-07-25 00:59:02,038 - INFO - [Epoch 1] Learning rate: 0.00e+00
