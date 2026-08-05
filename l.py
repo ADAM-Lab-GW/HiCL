@@ -25,6 +25,9 @@ from sklearn.metrics import confusion_matrix, silhouette_score, davies_bouldin_s
 import random
 from collections import defaultdict
 from scipy.spatial.distance import cdist
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+
 
 # Import from the optimal training script
 from train_hippocampal_optimal_moe import *
@@ -738,11 +741,11 @@ class DGGatedHippocampalMoE(OptimalHippocampalMoE):
         """Adds samples to the replay buffer for a given task using random replacement."""
         for i in range(inputs.size(0)):
             if len(self.replay_buffer[task_id]) < self.memory_size_per_task:
-                self.replay_buffer[task_id].append((inputs[i].cpu(), labels[i].cpu()))
+                self.replay_buffer[task_id].append((inputs[i], labels[i]))
             else:
                 # Randomly replace an existing sample
                 idx = np.random.randint(0, self.memory_size_per_task)
-                self.replay_buffer[task_id][idx] = (inputs[i].cpu(), labels[i].cpu())
+                self.replay_buffer[task_id][idx] = (inputs[i], labels[i])
 
     def sample_from_replay_buffer(self, task_id, batch_size):
         """Samples a batch from the replay buffer of a given task."""
@@ -795,7 +798,7 @@ class DGGatedHippocampalMoE(OptimalHippocampalMoE):
                     inputs = inputs.to(device)
                     features = self.feature_extractor(inputs).view(inputs.size(0), -1)
                     dg_output, _ = self.hippocampal_experts[task_id](features)
-                    all_dg_outputs.append(dg_output.cpu())
+                    all_dg_outputs.append(dg_output)
                 
                 # Average all DG outputs for this task
                 with torch.no_grad():
@@ -946,9 +949,9 @@ def analyze_dg_gated_model(model, test_loaders, device, save_dir):
                 features_flat = model.feature_extractor(inputs).view(inputs.size(0), -1)
                 dg_output, ca1_output = model.hippocampal_experts[task_id](features_flat)
                 
-                all_gate_logits.append(gate_logits.cpu())
-                all_dg_outputs.append(dg_output.cpu())
-                all_ca1_outputs.append(ca1_output.cpu())
+                all_gate_logits.append(gate_logits)
+                all_dg_outputs.append(dg_output)
+                all_ca1_outputs.append(ca1_output)
                 all_task_labels.extend([task_id] * inputs.size(0))
     
     all_gate_logits = torch.cat(all_gate_logits, dim=0)
@@ -957,11 +960,11 @@ def analyze_dg_gated_model(model, test_loaders, device, save_dir):
     all_task_labels = np.array(all_task_labels)
     
     routing_matrix = routing_matrix / (routing_matrix.sum(axis=1, keepdims=True) + 1e-8)
-    expert_utilization = np.bincount(all_gate_logits.detach().cpu().numpy().argmax(axis=1), minlength=model.num_experts) / len(all_gate_logits)
+    expert_utilization = np.bincount(all_gate_logits.detach().numpy().argmax(axis=1), minlength=model.num_experts) / len(all_gate_logits)
 
     create_dg_gated_visualizations(
-        all_gate_logits.detach().cpu().numpy(), all_dg_outputs.numpy(), all_ca1_outputs.numpy(),
-        all_task_labels, routing_matrix, expert_utilization, model.dg_prototypes.cpu().numpy(), analysis_dir
+        all_gate_logits.detach().numpy(), all_dg_outputs.numpy(), all_ca1_outputs.numpy(),
+        all_task_labels, routing_matrix, expert_utilization, model.dg_prototypes.numpy(), analysis_dir
     )
     
     return {
@@ -1046,7 +1049,7 @@ def analyze_dg_deep_dive(model, test_loaders, device, save_dir):
     
     def get_sparse_activation_hook(expert_id):
         def hook(module, input, output):
-            sparse_activation_outputs[expert_id].append(output.detach().cpu())
+            sparse_activation_outputs[expert_id].append(output.detach())
         return hook
     
     # Register hooks on SparseActivation layers
@@ -1073,14 +1076,14 @@ def analyze_dg_deep_dive(model, test_loaders, device, save_dir):
                 
                 # Get DG output from the correct expert for this task's data
                 dg_output, _ = model.hippocampal_experts[task_id](features)
-                dg_outputs_per_task[task_id].append(dg_output.cpu())
+                dg_outputs_per_task[task_id].append(dg_output)
 
                 # Get similarity of this data's DG pattern to ALL expert prototypes
                 all_dg_for_input = torch.stack([model.hippocampal_experts[i](features)[0] for i in range(model.num_experts)], dim=1)
                 all_dg_norm = F.normalize(all_dg_for_input, p=2, dim=2)
                 proto_norm = F.normalize(model.dg_prototypes, p=2, dim=1).to(device)
                 sims = torch.einsum('bne,ne->bn', all_dg_norm, proto_norm)
-                similarity_profiles[task_id].append(sims.cpu())
+                similarity_profiles[task_id].append(sims)
 
     # Remove hooks
     for hook in hooks:
@@ -1451,10 +1454,10 @@ def phase2_contrastive_tuning(model, train_loaders, device, args, log_dir):
     routed_experts = []
     for i in range(model.num_experts):
         dg_output, _ = model.hippocampal_experts[i](features)
-        all_dg.append(dg_output.detach().cpu().numpy())
+        all_dg.append(dg_output.detach().numpy())
     all_dg = np.concatenate(all_dg, axis=0)
     routed_experts = np.tile(np.arange(model.num_experts), len(inputs))
-    plot_tsne_dg(all_dg, np.repeat(labels.cpu().numpy(), model.num_experts), routed_experts, log_dir, tag="after_phase2")
+    plot_tsne_dg(all_dg, np.repeat(labels.numpy(), model.num_experts), routed_experts, log_dir, tag="after_phase2")
 
 def create_replay_balanced_loader(model, batch_size, batches_per_epoch=200):
     """
@@ -1703,7 +1706,7 @@ def phase1_train_experts_sequentially(model, train_loaders, test_loaders, device
     if args.ewc_lambda > 0:
         logger.info(f"🔧 Using EWC with lambda={args.ewc_lambda} to prevent forgetting")
 
-    for expert_id in range(args.num_experts):
+    for expert_id in range(1):
         train_loader = train_loaders[expert_id]
         test_loader = test_loaders[expert_id]
         # --- Freeze/Unfreeze Parameters ---
@@ -1769,7 +1772,7 @@ def phase1_train_experts_sequentially(model, train_loaders, test_loaders, device
                 # Apply class-balanced loss if enabled
                 if args.use_class_balanced_loss and class_weights is not None:
                     # Get global class IDs for this batch
-                    global_class_ids = labels.cpu().numpy()
+                    global_class_ids = labels.numpy()
                     # Get weights for this batch
                     batch_weights = torch.tensor([class_weights[class_id] for class_id in global_class_ids], 
                                                dtype=torch.float32, device=device)
@@ -1974,7 +1977,7 @@ def phase1_train_experts_sequentially(model, train_loaders, test_loaders, device
                             # Apply class-balanced loss to replay if enabled
                             if args.use_class_balanced_loss and class_weights is not None:
                                 # Get global class IDs for replay batch
-                                replay_global_class_ids = replay_global_labels.cpu().numpy()
+                                replay_global_class_ids = replay_global_labels.numpy()
                                 # Get weights for replay batch
                                 replay_batch_weights = torch.tensor([class_weights[class_id] for class_id in replay_global_class_ids], 
                                                                    dtype=torch.float32, device=device)
@@ -2202,11 +2205,11 @@ def evaluate_dg_gated_model_standardized(model, test_loaders, task_classes, devi
                 probs = F.softmax(task_outputs, dim=1)
                 conf = probs.max(dim=1)[0]
                 _, predicted = torch.max(task_outputs, 1)
-                all_true_taskil.extend(labels.cpu().numpy())
-                all_pred_taskil.extend((predicted + start_idx).cpu().numpy())
+                all_true_taskil.extend(labels.numpy())
+                all_pred_taskil.extend((predicted + start_idx).numpy())
                 all_expert_taskil.extend([expert_id]*len(labels))
-                all_loss_taskil.extend(loss.cpu().numpy())
-                all_conf_taskil.extend(conf.cpu().numpy())
+                all_loss_taskil.extend(loss.numpy())
+                all_conf_taskil.extend(conf.numpy())
                 expert_correct += (predicted == local_labels).sum().item()
                 expert_total += local_labels.size(0)
             expert_acc = (expert_correct / expert_total) * 100
@@ -2243,12 +2246,12 @@ def evaluate_dg_gated_model_standardized(model, test_loaders, task_classes, devi
             probs = F.softmax(outputs, dim=1)
             conf = probs.max(dim=1)[0]
             _, predicted = torch.max(outputs, 1)
-            chosen_experts = analysis_data['chosen_experts'].cpu().numpy() if analysis_data.get('chosen_experts') is not None else np.full(len(labels), -1)
-            all_true_classil.extend(labels.cpu().numpy())
-            all_pred_classil.extend(predicted.cpu().numpy())
+            chosen_experts = analysis_data['chosen_experts'].numpy() if analysis_data.get('chosen_experts') is not None else np.full(len(labels), -1)
+            all_true_classil.extend(labels.numpy())
+            all_pred_classil.extend(predicted.numpy())
             all_expert_classil.extend(chosen_experts)
-            all_loss_classil.extend(loss.cpu().numpy())
-            all_conf_classil.extend(conf.cpu().numpy())
+            all_loss_classil.extend(loss.numpy())
+            all_conf_classil.extend(conf.numpy())
             class_il_correct += (predicted == labels).sum().item()
             class_il_total += labels.size(0)
     class_il_accuracy = (class_il_correct / class_il_total) * 100
@@ -2438,14 +2441,14 @@ def analyze_class_il_breakdown(model, test_loaders, device, save_dir):
                 else:
                     outputs, _, analysis_data = model(inputs)
                 
-                preds = outputs.argmax(dim=1).cpu().numpy()
+                preds = outputs.argmax(dim=1).numpy()
                 # Defensive: handle None for chosen_experts
                 if analysis_data.get('chosen_experts') is not None:
-                    experts = analysis_data['chosen_experts'].cpu().numpy()
+                    experts = analysis_data['chosen_experts'].numpy()
                 else:
                     # Fallback: assign -1 if not available
                     experts = np.full(len(labels), -1)
-                all_true.extend(labels.cpu().numpy())
+                all_true.extend(labels.numpy())
                 all_pred.extend(preds)
                 all_expert.extend(experts)
                 all_task.extend([task_id] * len(labels))
@@ -2578,8 +2581,8 @@ def analyze_task_il_breakdown(model, test_loaders, device, save_dir):
             for inputs, labels in test_loader:
                 inputs, labels = inputs.to(device), labels.to(device)
                 outputs, _, _ = model(inputs, task_id=expert_id)
-                preds = outputs.argmax(dim=1).cpu().numpy() + expert_id * model.classes_per_task
-                all_true.extend(labels.cpu().numpy())
+                preds = outputs.argmax(dim=1).numpy() + expert_id * model.classes_per_task
+                all_true.extend(labels.numpy())
                 all_pred.extend(preds)
                 all_expert.extend([expert_id]*len(labels))
                 all_task.extend([expert_id]*len(labels))
@@ -2692,7 +2695,7 @@ def log_expert_utilization(gate_logits, epoch, log_dir):
     """
     # If gate_logits are logits, convert to routing decisions
     if len(gate_logits.shape) == 2:
-        routed_experts = np.argmax(gate_logits.detach().cpu().numpy(), axis=1)
+        routed_experts = np.argmax(gate_logits.detach().numpy(), axis=1)
     else:
         routed_experts = gate_logits
 
@@ -2841,7 +2844,7 @@ def calculate_expert_utilization_stats(gate_logits):
             'min': min_util,
             'max': max_util,
             'variance': variance_util,
-            'utilization': utilization.cpu().numpy()
+            'utilization': utilization.numpy()
         }
 
 def calculate_dg_sparsity_stats(model, inputs, device):
@@ -2933,7 +2936,7 @@ def compute_dg_prototypes(self, train_loaders, device):
                 inputs = inputs.to(device)
                 features = self.feature_extractor(inputs).view(inputs.size(0), -1)
                 dg_output, _ = self.hippocampal_experts[task_id](features)
-                all_dg_outputs.append(dg_output.cpu())
+                all_dg_outputs.append(dg_output)
             
             # Average all DG outputs for this task
             self.dg_prototypes[task_id] = torch.cat(all_dg_outputs, dim=0).mean(dim=0)
@@ -3110,7 +3113,7 @@ def analyze_dg_pattern_separation(model, test_loaders, device, save_dir=None):
                 # Stack outputs from all experts: [batch_size, num_experts, dg_dim]
                 batch_dg_outputs = torch.stack(batch_dg_outputs, dim=1)
                 
-                all_dg_outputs.append(batch_dg_outputs.cpu())
+                all_dg_outputs.append(batch_dg_outputs)
                 all_true_experts.append(torch.full((inputs.size(0),), task_id))
     
     # Concatenate all batches
@@ -3124,8 +3127,8 @@ def analyze_dg_pattern_separation(model, test_loaders, device, save_dir=None):
     
     # 1. Flatten and assign each sample to the highest-scoring expert
     normed = torch.nn.functional.normalize(dg_outputs.view(N, -1), p=2, dim=1)
-    embeddings = normed.cpu().numpy()
-    labels = true_expert.cpu().numpy()
+    embeddings = normed.numpy()
+    labels = true_expert.numpy()
     
     # Validate data before clustering
     if np.any(np.isnan(embeddings)) or np.any(np.isinf(embeddings)):
@@ -3390,6 +3393,936 @@ def log_and_plot_prototype_drift(proto_before, proto_after, phase_from, phase_to
     plt.savefig(f'{save_dir}/prototype_drift_hist_{phase_from}_to_{phase_to}.png')
     plt.close()
 
+import os
+import numpy as np
+import torch
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+
+
+def extract_and_visualize_dg_features(
+    model,
+    data_loaders,
+    device,
+    save_dir,
+    max_samples=2000,
+    reduction="tsne",
+    use_correct_expert=True,
+):
+    """
+    Extract final DG outputs and visualize them in 2D.
+
+    Args:
+        model:
+            Trained DGGatedHippocampalMoE model.
+
+        data_loaders:
+            List of loaders, one per task/expert.
+
+        device:
+            CPU or CUDA device.
+
+        save_dir:
+            Directory in which outputs will be saved.
+
+        max_samples:
+            Maximum number of samples to collect.
+
+        reduction:
+            "pca" or "tsne".
+
+        use_correct_expert:
+            True:
+                Pass task i's samples through expert i.
+            False:
+                Route each sample using DG prototype similarity and extract
+                the selected expert's DG representation.
+    """
+    os.makedirs(save_dir, exist_ok=True)
+    model.eval()
+
+    collected_dg = []
+    collected_classes = []
+    collected_tasks = []
+    collected_experts = []
+
+    with torch.no_grad():
+        for task_id, loader in enumerate(data_loaders):
+            for inputs, labels in loader:
+                inputs = inputs.to(device)
+                labels = labels.to(device)
+
+                # Shared CNN/GridCell features
+                features = model.feature_extractor(inputs)
+                features = features.view(inputs.size(0), -1)
+
+                if use_correct_expert:
+                    # Oracle expert: task i is processed by expert i
+                    dg_output, _ = model.hippocampal_experts[task_id](features)
+
+                    selected_experts = torch.full(
+                        (inputs.size(0),),
+                        task_id,
+                        dtype=torch.long,
+                        device=device,
+                    )
+
+                else:
+                    # Obtain DG output from every expert
+                    all_dg_outputs = []
+
+                    for expert_id in range(model.trained_experts):
+                        dg_output_i, _ = model.hippocampal_experts[expert_id](
+                            features
+                        )
+                        all_dg_outputs.append(dg_output_i)
+
+                    # [batch, experts, dg_dim]
+                    all_dg_outputs = torch.stack(all_dg_outputs, dim=1)
+
+                    normalized_dg = torch.nn.functional.normalize(
+                        all_dg_outputs,
+                        p=2,
+                        dim=2,
+                    )
+
+                    normalized_prototypes = torch.nn.functional.normalize(
+                        model.dg_prototypes[:model.trained_experts],
+                        p=2,
+                        dim=1,
+                    ).to(device)
+
+                    # [batch, experts]
+                    similarities = torch.einsum(
+                        "bed,ed->be",
+                        normalized_dg,
+                        normalized_prototypes,
+                    )
+
+                    selected_experts = similarities.argmax(dim=1)
+
+                    # Select each sample's routed DG representation
+                    batch_indices = torch.arange(
+                        inputs.size(0),
+                        device=device,
+                    )
+
+                    dg_output = all_dg_outputs[
+                        batch_indices,
+                        selected_experts,
+                    ]
+
+                collected_dg.append(dg_output.cpu())
+                collected_classes.append(labels.cpu())
+                collected_tasks.append(
+                    torch.full(
+                        (inputs.size(0),),
+                        task_id,
+                        dtype=torch.long,
+                    )
+                )
+                collected_experts.append(selected_experts.cpu())
+
+                current_count = sum(x.size(0) for x in collected_dg)
+
+                if current_count >= max_samples:
+                    break
+
+            if sum(x.size(0) for x in collected_dg) >= max_samples:
+                break
+
+    dg_features = torch.cat(collected_dg, dim=0)[:max_samples]
+    class_labels = torch.cat(collected_classes, dim=0)[:max_samples]
+    task_labels = torch.cat(collected_tasks, dim=0)[:max_samples]
+    expert_labels = torch.cat(collected_experts, dim=0)[:max_samples]
+
+    # Save the original 512-dimensional DG representations
+    torch.save(
+        {
+            "dg_features": dg_features,
+            "class_labels": class_labels,
+            "task_labels": task_labels,
+            "selected_experts": expert_labels,
+        },
+        os.path.join(save_dir, "dg_features.pt"),
+    )
+
+    features_np = dg_features.numpy()
+
+    # PCA before t-SNE makes t-SNE faster and less noisy
+    if reduction.lower() == "tsne":
+        intermediate_dim = min(
+            50,
+            features_np.shape[1],
+            features_np.shape[0] - 1,
+        )
+
+        pca_features = PCA(
+            n_components=intermediate_dim,
+            random_state=42,
+        ).fit_transform(features_np)
+
+        embedded = TSNE(
+            n_components=2,
+            perplexity=min(30, max(5, len(features_np) // 10)),
+            learning_rate="auto",
+            init="pca",
+            random_state=42,
+        ).fit_transform(pca_features)
+
+    elif reduction.lower() == "pca":
+        embedded = PCA(
+            n_components=2,
+            random_state=42,
+        ).fit_transform(features_np)
+
+    else:
+        raise ValueError("reduction must be 'pca' or 'tsne'")
+
+    # Plot by class
+    plt.figure(figsize=(10, 8))
+    scatter = plt.scatter(
+        embedded[:, 0],
+        embedded[:, 1],
+        c=class_labels.numpy(),
+        cmap="tab10",
+        s=16,
+        alpha=0.7,
+    )
+    plt.colorbar(scatter, label="Class")
+    plt.xlabel(f"{reduction.upper()} dimension 1")
+    plt.ylabel(f"{reduction.upper()} dimension 2")
+    plt.title("Final DG representations colored by class")
+    plt.tight_layout()
+    plt.savefig(
+        os.path.join(save_dir, f"dg_by_class_{reduction}.png"),
+        dpi=200,
+    )
+    plt.close()
+
+    # Plot by true task
+    plt.figure(figsize=(10, 8))
+    scatter = plt.scatter(
+        embedded[:, 0],
+        embedded[:, 1],
+        c=task_labels.numpy(),
+        cmap="tab10",
+        s=16,
+        alpha=0.7,
+    )
+    plt.colorbar(scatter, label="True task")
+    plt.xlabel(f"{reduction.upper()} dimension 1")
+    plt.ylabel(f"{reduction.upper()} dimension 2")
+    plt.title("Final DG representations colored by true task")
+    plt.tight_layout()
+    plt.savefig(
+        os.path.join(save_dir, f"dg_by_task_{reduction}.png"),
+        dpi=200,
+    )
+    plt.close()
+
+    # Plot by selected expert
+    plt.figure(figsize=(10, 8))
+    scatter = plt.scatter(
+        embedded[:, 0],
+        embedded[:, 1],
+        c=expert_labels.numpy(),
+        cmap="tab10",
+        s=16,
+        alpha=0.7,
+    )
+    plt.colorbar(scatter, label="Selected expert")
+    plt.xlabel(f"{reduction.upper()} dimension 1")
+    plt.ylabel(f"{reduction.upper()} dimension 2")
+    plt.title("Final DG representations colored by selected expert")
+    plt.tight_layout()
+    plt.savefig(
+        os.path.join(save_dir, f"dg_by_selected_expert_{reduction}.png"),
+        dpi=200,
+    )
+    plt.close()
+
+    print(f"Extracted DG shape: {tuple(dg_features.shape)}")
+    print(f"Saved DG features and plots to: {save_dir}")
+
+    return {
+        "dg_features": dg_features,
+        "class_labels": class_labels,
+        "task_labels": task_labels,
+        "selected_experts": expert_labels,
+        "embedding_2d": embedded,
+    }
+
+import os
+import json
+import numpy as np
+import torch
+import torch.nn.functional as F
+import matplotlib.pyplot as plt
+
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+from sklearn.metrics import (
+    silhouette_score,
+    davies_bouldin_score,
+    pairwise_distances,
+)
+
+
+def analyze_dg_input_output_features(
+    model,
+    data_loader,
+    device,
+    save_dir,
+    expert_id=0,
+    max_samples=2000,
+    num_images_to_show=16,
+    reduction="pca",
+    normalize_features=True,
+    class_names=None,
+    dataset_mean=(0.4914, 0.4822, 0.4465),
+    dataset_std=(0.2470, 0.2435, 0.2616),
+):
+    """
+    Compare:
+        1. Original input images
+        2. Flattened feature-extractor outputs entering DG
+        3. Final DG outputs leaving DG and entering CA3
+
+    This version is suitable for a one-expert, two-class experiment.
+
+    Args:
+        model:
+            Trained DGGatedHippocampalMoE model.
+
+        data_loader:
+            Loader containing samples for the selected expert/task.
+
+        device:
+            torch.device("cuda") or torch.device("cpu").
+
+        save_dir:
+            Directory for saved tensors, plots, and metrics.
+
+        expert_id:
+            Expert whose DG representations will be analyzed.
+
+        max_samples:
+            Maximum number of samples used in the feature analysis.
+
+        num_images_to_show:
+            Number of original input images shown in the image grid.
+
+        reduction:
+            "pca" or "tsne".
+
+        normalize_features:
+            L2-normalize each feature vector before computing metrics
+            and dimensionality reduction.
+
+        class_names:
+            Optional dictionary or list mapping class IDs to names.
+
+        dataset_mean, dataset_std:
+            Normalization values used by the image dataset.
+            Defaults are CIFAR-10 values. Change these if your
+            dataloader uses different normalization.
+    """
+    os.makedirs(save_dir, exist_ok=True)
+
+    if expert_id < 0 or expert_id >= model.num_experts:
+        raise ValueError(
+            f"expert_id={expert_id} is invalid for "
+            f"{model.num_experts} expert(s)."
+        )
+
+    if reduction.lower() not in {"pca", "tsne"}:
+        raise ValueError("reduction must be either 'pca' or 'tsne'")
+
+    model.eval()
+
+    original_inputs = []
+    dg_input_features = []
+    dg_output_features = []
+    class_labels = []
+
+    collected_samples = 0
+
+    with torch.no_grad():
+        for inputs, labels in data_loader:
+            inputs = inputs.to(device)
+            labels = labels.to(device)
+
+            remaining = max_samples - collected_samples
+
+            if remaining <= 0:
+                break
+
+            if inputs.size(0) > remaining:
+                inputs = inputs[:remaining]
+                labels = labels[:remaining]
+
+            # ---------------------------------------------------------
+            # 1. Original inputs
+            # ---------------------------------------------------------
+            original_inputs.append(inputs.detach().cpu())
+
+            # ---------------------------------------------------------
+            # 2. Features entering DG
+            # ---------------------------------------------------------
+            feature_maps = model.feature_extractor(inputs)
+
+            # This flatten operation matches the model's forward method
+            features_entering_dg = feature_maps.view(inputs.size(0), -1)
+
+            # ---------------------------------------------------------
+            # 3. Features leaving DG
+            # ---------------------------------------------------------
+            # CustomEnhancedHippocampalExpert returns:
+            #   dg_output, ca1_output
+            #
+            # Internally:
+            #   dg_output = expert.dg(features_entering_dg)
+            #   ca3_output = expert.ca3(dg_output)
+            #
+            # Therefore, dg_output is exactly what enters CA3.
+            dg_output, _ = model.hippocampal_experts[expert_id](
+                features_entering_dg
+            )
+
+            dg_input_features.append(features_entering_dg.detach().cpu())
+            dg_output_features.append(dg_output.detach().cpu())
+            class_labels.append(labels.detach().cpu())
+
+            collected_samples += inputs.size(0)
+
+    if collected_samples == 0:
+        raise RuntimeError("The supplied data loader produced no samples.")
+
+    original_inputs = torch.cat(original_inputs, dim=0)
+    dg_input_features = torch.cat(dg_input_features, dim=0)
+    dg_output_features = torch.cat(dg_output_features, dim=0)
+    class_labels = torch.cat(class_labels, dim=0)
+
+    print("=" * 70)
+    print("DG FEATURE EXTRACTION")
+    print("=" * 70)
+    print(f"Samples:                  {len(class_labels)}")
+    print(f"Original input shape:     {tuple(original_inputs.shape)}")
+    print(f"Features entering DG:     {tuple(dg_input_features.shape)}")
+    print(f"Features leaving DG:      {tuple(dg_output_features.shape)}")
+    print(f"Unique class labels:      {torch.unique(class_labels).tolist()}")
+    print("=" * 70)
+
+    # Save the full, unreduced tensors
+    tensor_path = os.path.join(save_dir, "dg_feature_comparison.pt")
+
+    torch.save(
+        {
+            "original_inputs": original_inputs,
+            "dg_input_features": dg_input_features,
+            "dg_output_features": dg_output_features,
+            "class_labels": class_labels,
+            "expert_id": expert_id,
+        },
+        tensor_path,
+    )
+
+    # =============================================================
+    # Visualize original images
+    # =============================================================
+    display_count = min(num_images_to_show, len(original_inputs))
+
+    mean = torch.tensor(dataset_mean).view(3, 1, 1)
+    std = torch.tensor(dataset_std).view(3, 1, 1)
+
+    # Reverse dataset normalization for display
+    display_images = original_inputs[:display_count].clone()
+
+    if display_images.size(1) == 3:
+        display_images = display_images * std + mean
+
+    display_images = display_images.clamp(0, 1)
+
+    grid_cols = min(4, display_count)
+    grid_rows = int(np.ceil(display_count / grid_cols))
+
+    fig, axes = plt.subplots(
+        grid_rows,
+        grid_cols,
+        figsize=(3 * grid_cols, 3 * grid_rows),
+    )
+
+    axes = np.array(axes).reshape(-1)
+
+    for index in range(len(axes)):
+        axes[index].axis("off")
+
+        if index >= display_count:
+            continue
+
+        image = display_images[index]
+
+        if image.size(0) == 1:
+            axes[index].imshow(
+                image.squeeze(0).numpy(),
+                cmap="gray",
+            )
+        else:
+            axes[index].imshow(
+                image.permute(1, 2, 0).numpy()
+            )
+
+        label_id = int(class_labels[index].item())
+
+        if class_names is None:
+            label_text = f"Class {label_id}"
+        elif isinstance(class_names, dict):
+            label_text = class_names.get(label_id, f"Class {label_id}")
+        else:
+            if 0 <= label_id < len(class_names):
+                label_text = class_names[label_id]
+            else:
+                label_text = f"Class {label_id}"
+
+        axes[index].set_title(label_text)
+
+    fig.suptitle(
+        f"Original inputs used by Expert {expert_id}",
+        fontsize=14,
+    )
+    plt.tight_layout()
+    plt.savefig(
+        os.path.join(save_dir, "original_input_images.png"),
+        dpi=200,
+        bbox_inches="tight",
+    )
+    plt.close()
+
+    # =============================================================
+    # Prepare feature matrices
+    # =============================================================
+    dg_input_analysis = dg_input_features.float()
+    dg_output_analysis = dg_output_features.float()
+
+    if normalize_features:
+        dg_input_analysis = F.normalize(
+            dg_input_analysis,
+            p=2,
+            dim=1,
+        )
+
+        dg_output_analysis = F.normalize(
+            dg_output_analysis,
+            p=2,
+            dim=1,
+        )
+
+    dg_input_np = dg_input_analysis.numpy()
+    dg_output_np = dg_output_analysis.numpy()
+    labels_np = class_labels.numpy()
+
+    # =============================================================
+    # Dimensionality reduction
+    # =============================================================
+    def reduce_to_2d(features, method):
+        if method == "pca":
+            reducer = PCA(
+                n_components=2,
+                random_state=42,
+            )
+            return reducer.fit_transform(features)
+
+        # Reduce very high-dimensional features before t-SNE
+        intermediate_dimensions = min(
+            50,
+            features.shape[1],
+            features.shape[0] - 1,
+        )
+
+        if intermediate_dimensions < 2:
+            raise RuntimeError(
+                "Not enough samples to perform t-SNE."
+            )
+
+        features_pca = PCA(
+            n_components=intermediate_dimensions,
+            random_state=42,
+        ).fit_transform(features)
+
+        # Perplexity must be smaller than number of samples
+        perplexity = min(
+            30,
+            max(5, features.shape[0] // 10),
+            features.shape[0] - 1,
+        )
+
+        return TSNE(
+            n_components=2,
+            perplexity=perplexity,
+            learning_rate="auto",
+            init="pca",
+            random_state=42,
+        ).fit_transform(features_pca)
+
+    input_embedding = reduce_to_2d(
+        dg_input_np,
+        reduction.lower(),
+    )
+
+    output_embedding = reduce_to_2d(
+        dg_output_np,
+        reduction.lower(),
+    )
+
+    # Save reduced coordinates
+    np.savez(
+        os.path.join(
+            save_dir,
+            f"dg_feature_embeddings_{reduction.lower()}.npz",
+        ),
+        input_embedding=input_embedding,
+        output_embedding=output_embedding,
+        labels=labels_np,
+    )
+
+    # =============================================================
+    # Side-by-side feature visualization
+    # =============================================================
+    unique_classes = np.unique(labels_np)
+
+    fig, axes = plt.subplots(
+        1,
+        2,
+        figsize=(16, 7),
+    )
+
+    for class_id in unique_classes:
+        class_mask = labels_np == class_id
+
+        if class_names is None:
+            class_label = f"Class {class_id}"
+        elif isinstance(class_names, dict):
+            class_label = class_names.get(
+                int(class_id),
+                f"Class {class_id}",
+            )
+        else:
+            if 0 <= int(class_id) < len(class_names):
+                class_label = class_names[int(class_id)]
+            else:
+                class_label = f"Class {class_id}"
+
+        axes[0].scatter(
+            input_embedding[class_mask, 0],
+            input_embedding[class_mask, 1],
+            s=18,
+            alpha=0.7,
+            label=class_label,
+        )
+
+        axes[1].scatter(
+            output_embedding[class_mask, 0],
+            output_embedding[class_mask, 1],
+            s=18,
+            alpha=0.7,
+            label=class_label,
+        )
+
+    method_name = reduction.upper()
+
+    axes[0].set_title(
+        f"Features entering DG\n({dg_input_features.shape[1]} dimensions)"
+    )
+    axes[0].set_xlabel(f"{method_name} dimension 1")
+    axes[0].set_ylabel(f"{method_name} dimension 2")
+    axes[0].legend()
+    axes[0].grid(alpha=0.2)
+
+    axes[1].set_title(
+        f"Features leaving DG and entering CA3\n"
+        f"({dg_output_features.shape[1]} dimensions)"
+    )
+    axes[1].set_xlabel(f"{method_name} dimension 1")
+    axes[1].set_ylabel(f"{method_name} dimension 2")
+    axes[1].legend()
+    axes[1].grid(alpha=0.2)
+
+    fig.suptitle(
+        f"DG input versus DG output — Expert {expert_id}",
+        fontsize=15,
+    )
+
+    plt.tight_layout()
+    plt.savefig(
+        os.path.join(
+            save_dir,
+            f"dg_input_vs_output_{reduction.lower()}.png",
+        ),
+        dpi=200,
+        bbox_inches="tight",
+    )
+    plt.close()
+
+    # =============================================================
+    # Compute separation metrics
+    # =============================================================
+    def calculate_feature_metrics(features, labels):
+        unique = np.unique(labels)
+
+        # Silhouette and Davies-Bouldin need at least two classes
+        if len(unique) < 2:
+            return {
+                "silhouette_score": None,
+                "davies_bouldin_index": None,
+                "mean_intra_class_distance": None,
+                "mean_inter_class_distance": None,
+                "separation_ratio": None,
+            }
+
+        # Need at least two samples in every class
+        class_counts = [
+            np.sum(labels == class_id)
+            for class_id in unique
+        ]
+
+        if min(class_counts) < 2:
+            return {
+                "silhouette_score": None,
+                "davies_bouldin_index": None,
+                "mean_intra_class_distance": None,
+                "mean_inter_class_distance": None,
+                "separation_ratio": None,
+            }
+
+        silhouette = silhouette_score(
+            features,
+            labels,
+            metric="euclidean",
+        )
+
+        db_index = davies_bouldin_score(
+            features,
+            labels,
+        )
+
+        distances = pairwise_distances(
+            features,
+            metric="euclidean",
+        )
+
+        same_class = labels[:, None] == labels[None, :]
+        different_class = ~same_class
+
+        # Exclude diagonal self-distances
+        diagonal = np.eye(len(labels), dtype=bool)
+        same_class = same_class & ~diagonal
+
+        intra_distances = distances[same_class]
+        inter_distances = distances[different_class]
+
+        mean_intra = (
+            float(intra_distances.mean())
+            if len(intra_distances) > 0
+            else None
+        )
+
+        mean_inter = (
+            float(inter_distances.mean())
+            if len(inter_distances) > 0
+            else None
+        )
+
+        if (
+            mean_intra is not None
+            and mean_inter is not None
+            and mean_intra > 0
+        ):
+            separation_ratio = mean_inter / mean_intra
+        else:
+            separation_ratio = None
+
+        return {
+            "silhouette_score": float(silhouette),
+            "davies_bouldin_index": float(db_index),
+            "mean_intra_class_distance": mean_intra,
+            "mean_inter_class_distance": mean_inter,
+            "separation_ratio": separation_ratio,
+        }
+
+    input_metrics = calculate_feature_metrics(
+        dg_input_np,
+        labels_np,
+    )
+
+    output_metrics = calculate_feature_metrics(
+        dg_output_np,
+        labels_np,
+    )
+
+    metrics = {
+        "expert_id": expert_id,
+        "num_samples": int(len(labels_np)),
+        "classes": [int(x) for x in unique_classes],
+        "normalization_used": normalize_features,
+        "features_entering_dg_dimension": int(
+            dg_input_features.shape[1]
+        ),
+        "features_leaving_dg_dimension": int(
+            dg_output_features.shape[1]
+        ),
+        "dg_input_metrics": input_metrics,
+        "dg_output_metrics": output_metrics,
+    }
+
+    # Calculate explicit changes
+    if (
+        input_metrics["silhouette_score"] is not None
+        and output_metrics["silhouette_score"] is not None
+    ):
+        metrics["silhouette_change"] = (
+            output_metrics["silhouette_score"]
+            - input_metrics["silhouette_score"]
+        )
+
+    if (
+        input_metrics["davies_bouldin_index"] is not None
+        and output_metrics["davies_bouldin_index"] is not None
+    ):
+        # Positive means improvement because lower DB is better
+        metrics["davies_bouldin_improvement"] = (
+            input_metrics["davies_bouldin_index"]
+            - output_metrics["davies_bouldin_index"]
+        )
+
+    if (
+        input_metrics["separation_ratio"] is not None
+        and output_metrics["separation_ratio"] is not None
+    ):
+        metrics["separation_ratio_change"] = (
+            output_metrics["separation_ratio"]
+            - input_metrics["separation_ratio"]
+        )
+
+    metrics_path = os.path.join(
+        save_dir,
+        "dg_input_output_metrics.json",
+    )
+
+    with open(metrics_path, "w", encoding="utf-8") as file:
+        json.dump(metrics, file, indent=4)
+
+    # =============================================================
+    # Plot metric comparison
+    # =============================================================
+    metric_names = []
+    input_values = []
+    output_values = []
+
+    possible_metrics = [
+        (
+            "Silhouette\n(higher better)",
+            "silhouette_score",
+        ),
+        (
+            "Davies-Bouldin\n(lower better)",
+            "davies_bouldin_index",
+        ),
+        (
+            "Inter/Intra ratio\n(higher better)",
+            "separation_ratio",
+        ),
+    ]
+
+    for display_name, key in possible_metrics:
+        input_value = input_metrics[key]
+        output_value = output_metrics[key]
+
+        if input_value is not None and output_value is not None:
+            metric_names.append(display_name)
+            input_values.append(input_value)
+            output_values.append(output_value)
+
+    if metric_names:
+        positions = np.arange(len(metric_names))
+        width = 0.35
+
+        plt.figure(figsize=(10, 6))
+        plt.bar(
+            positions - width / 2,
+            input_values,
+            width,
+            label="Entering DG",
+        )
+        plt.bar(
+            positions + width / 2,
+            output_values,
+            width,
+            label="Leaving DG",
+        )
+
+        plt.xticks(positions, metric_names)
+        plt.ylabel("Metric value")
+        plt.title(
+            f"Class-separation metrics before and after DG — "
+            f"Expert {expert_id}"
+        )
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(
+            os.path.join(
+                save_dir,
+                "dg_input_output_metric_comparison.png",
+            ),
+            dpi=200,
+            bbox_inches="tight",
+        )
+        plt.close()
+
+    # =============================================================
+    # Print results
+    # =============================================================
+    print("\nCLASS-SEPARATION COMPARISON")
+    print("-" * 70)
+
+    print("Features entering DG:")
+    for key, value in input_metrics.items():
+        print(f"  {key}: {value}")
+
+    print("\nFeatures leaving DG / entering CA3:")
+    for key, value in output_metrics.items():
+        print(f"  {key}: {value}")
+
+    print("\nChanges:")
+    print(
+        "  Silhouette change:",
+        metrics.get("silhouette_change"),
+    )
+    print(
+        "  Davies-Bouldin improvement:",
+        metrics.get("davies_bouldin_improvement"),
+    )
+    print(
+        "  Separation-ratio change:",
+        metrics.get("separation_ratio_change"),
+    )
+
+    print("\nSaved:")
+    print(f"  Raw tensors:       {tensor_path}")
+    print(f"  Metrics:           {metrics_path}")
+    print(f"  Output directory:  {save_dir}")
+
+    return {
+        "original_inputs": original_inputs,
+        "dg_input_features": dg_input_features,
+        "dg_output_features": dg_output_features,
+        "class_labels": class_labels,
+        "input_embedding": input_embedding,
+        "output_embedding": output_embedding,
+        "metrics": metrics,
+    }
+
 def main():
     """Train model + Analyze DG-Gated model"""
     args = parse_arguments()
@@ -3433,7 +4366,101 @@ def main():
     
     # === PHASE 1: Independent Expert Training with Online EMA Prototypes ===
     phase1_train_experts_sequentially(model, train_loaders, test_loaders, device, args,log_dir)
-    
+
+    cifar10_class_names = {
+    0: "Airplane",
+    1: "Automobile",
+}
+    analysis_results = analyze_dg_input_output_features(
+    model=model,
+    data_loader=test_loaders[0],
+    device=device,
+    save_dir=os.path.join(
+        log_dir,
+        "expert0_dg_feature_comparison",
+    ),
+    expert_id=0,
+    max_samples=2000,
+    num_images_to_show=16,
+    reduction="pca",
+    normalize_features=True,
+    class_names=cifar10_class_names,
+)
+    analysis_results_tsne = analyze_dg_input_output_features(
+    model=model,
+    data_loader=test_loaders[0],
+    device=device,
+    save_dir=os.path.join(
+        log_dir,
+        "expert0_dg_feature_comparison_tsne",
+    ),
+    expert_id=0,
+    max_samples=2000,
+    num_images_to_show=16,
+    reduction="tsne",
+    normalize_features=True,
+    class_names=cifar10_class_names,
+)
+    model.eval()
+
+    dg_outputs = []
+    labels_all = []
+
+    with torch.no_grad():
+        for inputs, labels in test_loaders[0]:
+            inputs = inputs.to(device)
+
+            features = model.feature_extractor(inputs)
+            features = features.view(inputs.size(0), -1)
+
+            # This dg_output is passed directly into CA3
+            dg_output, ca1_output = model.hippocampal_experts[0](features)
+
+            dg_outputs.append(dg_output.cpu())
+            labels_all.append(labels.cpu())
+
+    dg_outputs = torch.cat(dg_outputs)
+    labels_all = torch.cat(labels_all)
+
+    print(dg_outputs.shape)
+
+
+    dg_2d = PCA(n_components=2).fit_transform(dg_outputs.numpy())
+
+    plt.figure(figsize=(8, 6))
+    scatter = plt.scatter(
+        dg_2d[:, 0],
+        dg_2d[:, 1],
+        c=labels_all.numpy(),
+        cmap="tab10",
+        alpha=0.7,
+    )
+
+    plt.colorbar(scatter, label="Class")
+    plt.xlabel("PC1")
+    plt.ylabel("PC2")
+    plt.title("Expert 0 final DG representations")
+    plt.tight_layout()
+    plt.show()
+
+    dg_results = extract_and_visualize_dg_features(
+    model=model,
+    data_loaders=test_loaders,
+    device=device,
+    save_dir=os.path.join(log_dir, "dg_feature_visualization_correct_expert"),
+    max_samples=2000,
+    reduction="tsne",
+    use_correct_expert=True,
+)
+    dg_results = extract_and_visualize_dg_features(
+        model=model,
+        data_loaders=test_loaders,
+        device=device,
+        save_dir=os.path.join(log_dir, "dg_feature_visualization"),
+        max_samples=2000,
+        reduction="tsne",
+        use_correct_expert=False,
+    )
     # Prototypes are now computed online during Phase 1 using EMAs
     logging.info("✅ Online EMA prototypes computed during Phase 1 training")
     
@@ -3450,7 +4477,7 @@ def main():
             proto_array = []
             for expert_id in range(model.num_experts):
                 if expert_id in model.dg_prototypes and model.dg_prototypes[expert_id] is not None:
-                    proto_array.append(model.dg_prototypes[expert_id].cpu().numpy())
+                    proto_array.append(model.dg_prototypes[expert_id].numpy())
                 else:
                     # Create a zero prototype if missing - use the correct attribute name
                     dg_dim = model.hippocampal_experts[0].dg.hidden_dim
@@ -3488,7 +4515,7 @@ def main():
             proto_array = []
             for expert_id in range(model.num_experts):
                 if expert_id in model.dg_prototypes and model.dg_prototypes[expert_id] is not None:
-                    proto_array.append(model.dg_prototypes[expert_id].cpu().numpy())
+                    proto_array.append(model.dg_prototypes[expert_id].numpy())
                 else:
                     # Create a zero prototype if missing - use the correct attribute name
                     dg_dim = model.hippocampal_experts[0].dg.hidden_dim
@@ -3536,7 +4563,7 @@ def main():
             proto_array_phase2 = []
             for expert_id in range(model.num_experts):
                 if expert_id in model.dg_prototypes and model.dg_prototypes[expert_id] is not None:
-                    proto_array_phase2.append(model.dg_prototypes[expert_id].cpu().numpy())
+                    proto_array_phase2.append(model.dg_prototypes[expert_id].numpy())
                 else:
                     # Use the correct attribute name
                     dg_dim = model.hippocampal_experts[0].dg.hidden_dim
@@ -3584,11 +4611,11 @@ This analysis uses gating based on DG pattern similarity, not a separate gating 
     test_class_counts = {}
     for expert_id, loader in enumerate(train_loaders):
         for _, labels in loader:
-            for l in labels.cpu().numpy():
+            for l in labels.numpy():
                 train_class_counts[l] = train_class_counts.get(l, 0) + 1
     for expert_id, loader in enumerate(test_loaders):
         for _, labels in loader:
-            for l in labels.cpu().numpy():
+            for l in labels.numpy():
                 test_class_counts[l] = test_class_counts.get(l, 0) + 1
     logging.info("=== TRAIN CLASS COUNTS ===\n" + str(train_class_counts))
     logging.info("=== TEST CLASS COUNTS ===\n" + str(test_class_counts))

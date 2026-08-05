@@ -1,0 +1,191 @@
+2026-07-30 09:16:03,302 - INFO - 🚀 TRAIN + ANALYZE DG-GATED MODEL (2-Phase Contrastive)
+2026-07-30 09:16:03,302 - INFO - ================================================================================
+2026-07-30 09:16:35,667 - INFO - Task 0 ([0, 1]): 10000 train, 2000 test samples
+2026-07-30 09:17:06,215 - INFO - Task 1 ([2, 3]): 10000 train, 2000 test samples
+2026-07-30 09:17:36,725 - INFO - Task 2 ([4, 5]): 10000 train, 2000 test samples
+2026-07-30 09:18:07,255 - INFO - Task 3 ([6, 7]): 10000 train, 2000 test samples
+2026-07-30 09:18:37,933 - INFO - Task 4 ([8, 9]): 10000 train, 2000 test samples
+2026-07-30 09:18:41,022 - INFO - 🧠 Using LeNet-style feature extractor with Grid Cells.
+2026-07-30 09:18:41,040 - INFO -   - LeNet feature extractor output dimension: 4096
+2026-07-30 09:18:48,925 - INFO - 🔧 Initialized DG-Gated Hippocampal MoE with 5 experts, 2 classes per task
+2026-07-30 09:18:48,925 - INFO - 🔧 Target DG sparsity: 0.03, Memory size per task: 200
+2026-07-30 09:18:48,925 - INFO - 🔧 EMA parameters: warmup=30, momentum=0.9
+2026-07-30 09:18:48,939 - INFO - 🔧 Feature extractor output dimension: 4096 (256 channels * spatial dims)
+2026-07-30 09:18:48,939 - INFO - 🔧 Using standard feature extractor
+2026-07-30 09:18:50,171 - INFO - 🔧 Total model parameters: 44,039,498
+2026-07-30 09:18:50,171 - INFO - 🔧 Expert parameters: 43,137,920 (8,627,584.0 per expert)
+2026-07-30 09:18:50,177 - INFO - Model parameters (DG-Gated): 44,039,498
+2026-07-30 09:18:50,177 - INFO - 🌡️ Set gating temperature to: 0.03
+2026-07-30 09:18:50,177 - INFO - 🚪 Set gating strategy to: soft
+2026-07-30 09:18:50,177 - INFO - 
+================================================================================
+2026-07-30 09:18:50,177 - INFO - PHASE 1: TRAINING HIPPOCAMPAL EXPERTS WITH DISTILLATION
+2026-07-30 09:18:50,177 - INFO - ================================================================================
+2026-07-30 09:18:50,177 - INFO - 🔧 Using EWC with lambda=1000.0 to prevent forgetting
+2026-07-30 09:18:50,180 - INFO - 
+Training Expert 0...
+2026-07-30 09:18:50,180 - INFO -   Trainable parameters: 19,630,274
+2026-07-30 09:18:50,456 - INFO - 🔧 Initialized online prototype tracking: 10 classes, 512 DG dims
+2026-07-30 09:21:55,474 - INFO -   Epoch 12 | Test Acc: 97.80% (Best: 97.80%)
+2026-07-30 09:21:55,493 - INFO - 🔧 EWC Enhanced: Initializing Fisher info for 90 parameter groups (19,630,274 total parameters)
+2026-07-30 09:21:58,418 - INFO - 🔧 EWC Enhanced: Computed Fisher info for 81/90 parameter groups
+2026-07-30 09:21:58,419 - INFO - 🔧 EWC Enhanced: Total Fisher parameters: 19,630,274
+2026-07-30 09:21:58,626 - INFO - 🔧 EWC Fisher Analysis:
+2026-07-30 09:21:58,626 - INFO -   - Total parameters: 19,630,274
+2026-07-30 09:21:58,626 - INFO -   - Non-zero Fisher values: 2,632,966
+2026-07-30 09:21:58,626 - INFO -   - Coverage ratio: 0.134
+2026-07-30 09:21:58,626 - INFO -   - Fisher value range: [0.00e+00, 7.08e-04]
+2026-07-30 09:21:58,626 - INFO -   - Fisher mean/std: 3.13e-08/1.34e-06
+2026-07-30 09:21:58,626 - INFO -   - feature_extractor: 298,843/375,872 (0.795)
+2026-07-30 09:21:58,626 - INFO -   - hippocampal_experts: 2,333,865/19,254,144 (0.121)
+2026-07-30 09:21:58,626 - INFO -   - output_layers: 258/258 (1.000)
+2026-07-30 09:21:58,635 - INFO - 🔧 EWC: Computed Fisher importance for expert 0 (90 parameter groups, 19,630,274 total parameters)
+2026-07-30 09:21:58,635 - INFO - 🔒 Frozen prototypes for expert 0 classes: [0, 1]
+2026-07-30 09:21:58,635 - INFO - 🔄 Updated DG prototypes for 1 trained experts
+2026-07-30 09:23:20,922 - INFO - ✅ Online EMA prototypes computed during Phase 1 training
+2026-07-30 09:23:20,923 - INFO -  POST PHASE 1 DG PATTERN SEPARATION DIAGNOSTIC
+2026-07-30 09:23:20,923 - INFO - 
+🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬
+2026-07-30 09:23:20,924 - INFO - 🔬 DG PATTERN SEPARATION DIAGNOSTIC
+2026-07-30 09:23:20,924 - INFO - 🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬
+2026-07-30 09:23:28,974 - INFO - 📊 Collected 10000 samples across 5 experts
+2026-07-30 09:23:28,974 - INFO - 📊 DG embedding dimension: 512
+2026-07-30 09:23:32,073 - INFO - ✅ Silhouette Score: -0.0014
+2026-07-30 09:23:32,270 - INFO - ✅ Davies–Bouldin Index: 22.6412
+2026-07-30 09:24:06,805 - INFO - ✅ Mean Intra-Cluster Dist: 1.1307
+2026-07-30 09:24:06,806 - INFO - ✅ Mean Inter-Cluster Dist: 1.1417
+2026-07-30 09:24:06,806 - INFO - ✅ Separation Ratio (Inter/Intra): 1.0097
+2026-07-30 09:24:06,806 - INFO - ⚠️ WEAK: Poor DG pattern separation
+2026-07-30 09:24:06,806 - INFO - 🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬
+2026-07-30 09:24:06,806 - INFO - 🔬 DG PATTERN SEPARATION DIAGNOSTIC COMPLETE
+2026-07-30 09:24:06,807 - INFO - 🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬
+2026-07-30 09:24:11,082 - WARNING - ⚠️ Failed to save Phase 1 prototype plots: 'CustomDentateGyrusExpert' object has no attribute 'hidden_dim'
+2026-07-30 09:24:11,082 - INFO - 
+================================================================================
+2026-07-30 09:24:11,082 - INFO - PHASE 2: JOINT CONTRASTIVE FINE-TUNING OF DG EXPERTS (REPLAY ONLY)
+2026-07-30 09:24:11,082 - INFO - ================================================================================
+2026-07-30 09:24:11,088 - INFO -   🥶 Feature extractor, CA3, and output layers frozen.
+2026-07-30 09:24:11,088 - INFO -   🔥 Surgically tuning 28,864,000 parameters in DG layers only.
+2026-07-30 09:24:11,088 - INFO -   📚 Using ONLY replay buffer data to prevent forgetting.
+2026-07-30 09:24:11,090 - INFO - 📚 Using 200 replay samples for Phase 2 training.
+2026-07-30 09:24:59,850 - INFO -   Epoch 1 | Average Contrastive Loss: 0.7055
+2026-07-30 09:24:59,850 - INFO - [Epoch 1] Pull sim: 0.5975, Pull dist: 0.4025, Pull violations: 0.9062, Push active: 0.0000
+2026-07-30 09:24:59,851 - INFO - [Epoch 1] Expert Util - Mean: 0.200, Std: 0.063, Min: 0.172, Max: 0.312
+2026-07-30 09:24:59,851 - INFO - [Epoch 1] Gating - Confidence: 0.312±0.000, Entropy: 1.574±0.000
+2026-07-30 09:24:59,852 - INFO - [Epoch 1] Prototypes - Off-diag sim: 0.000±0.000, Range: [0.000, 0.000]
+2026-07-30 09:24:59,852 - INFO - [Epoch 1] Memory - Total replay: 200, Distribution: [200, 0, 0, 0, 0]
+2026-07-30 09:24:59,901 - INFO - [Epoch 1] Grad norm: 4.4504 (over 130 params)
+2026-07-30 09:25:00,324 - INFO - 📚 Using 200 replay samples for Phase 2 training.
+2026-07-30 09:25:50,344 - INFO -   Epoch 2 | Average Contrastive Loss: 0.4964
+2026-07-30 09:25:50,344 - INFO - [Epoch 2] Pull sim: 0.6106, Pull dist: 0.3894, Pull violations: 0.0000, Push active: 0.0000
+2026-07-30 09:25:50,345 - INFO - [Epoch 2] Expert Util - Mean: 0.200, Std: 0.064, Min: 0.171, Max: 0.315
+2026-07-30 09:25:50,345 - INFO - [Epoch 2] Gating - Confidence: 0.315±0.000, Entropy: 1.573±0.000
+2026-07-30 09:25:50,346 - INFO - [Epoch 2] Prototypes - Off-diag sim: 0.000±0.000, Range: [0.000, 0.000]
+2026-07-30 09:25:50,346 - INFO - [Epoch 2] Memory - Total replay: 200, Distribution: [200, 0, 0, 0, 0]
+2026-07-30 09:25:50,415 - INFO - [Epoch 2] Grad norm: 4.4478 (over 130 params)
+2026-07-30 09:25:50,815 - INFO - 📚 Using 200 replay samples for Phase 2 training.
+2026-07-30 09:26:40,057 - INFO -   Epoch 3 | Average Contrastive Loss: 0.4830
+2026-07-30 09:26:40,057 - INFO - [Epoch 3] Pull sim: 0.6211, Pull dist: 0.3789, Pull violations: 0.0000, Push active: 0.0000
+2026-07-30 09:26:40,058 - INFO - [Epoch 3] Expert Util - Mean: 0.200, Std: 0.066, Min: 0.171, Max: 0.318
+2026-07-30 09:26:40,058 - INFO - [Epoch 3] Gating - Confidence: 0.318±0.000, Entropy: 1.571±0.000
+2026-07-30 09:26:40,059 - INFO - [Epoch 3] Prototypes - Off-diag sim: 0.000±0.000, Range: [0.000, 0.000]
+2026-07-30 09:26:40,059 - INFO - [Epoch 3] Memory - Total replay: 200, Distribution: [200, 0, 0, 0, 0]
+2026-07-30 09:26:40,102 - INFO - [Epoch 3] Grad norm: 4.4752 (over 130 params)
+2026-07-30 09:26:40,519 - INFO - 📚 Using 200 replay samples for Phase 2 training.
+2026-07-30 09:27:32,461 - INFO -   Epoch 4 | Average Contrastive Loss: 0.4701
+2026-07-30 09:27:32,461 - INFO - [Epoch 4] Pull sim: 0.6306, Pull dist: 0.3694, Pull violations: 0.0000, Push active: 0.0000
+2026-07-30 09:27:32,462 - INFO - [Epoch 4] Expert Util - Mean: 0.200, Std: 0.067, Min: 0.170, Max: 0.320
+2026-07-30 09:27:32,462 - INFO - [Epoch 4] Gating - Confidence: 0.320±0.000, Entropy: 1.570±0.000
+2026-07-30 09:27:32,463 - INFO - [Epoch 4] Prototypes - Off-diag sim: 0.000±0.000, Range: [0.000, 0.000]
+2026-07-30 09:27:32,463 - INFO - [Epoch 4] Memory - Total replay: 200, Distribution: [200, 0, 0, 0, 0]
+2026-07-30 09:27:32,508 - INFO - [Epoch 4] Grad norm: 4.4494 (over 130 params)
+2026-07-30 09:27:32,919 - INFO - 📚 Using 200 replay samples for Phase 2 training.
+2026-07-30 09:28:22,133 - INFO -   Epoch 5 | Average Contrastive Loss: 0.4570
+2026-07-30 09:28:22,133 - INFO - [Epoch 5] Pull sim: 0.6377, Pull dist: 0.3623, Pull violations: 0.0000, Push active: 0.0000
+2026-07-30 09:28:22,134 - INFO - [Epoch 5] Expert Util - Mean: 0.200, Std: 0.068, Min: 0.170, Max: 0.321
+2026-07-30 09:28:22,134 - INFO - [Epoch 5] Gating - Confidence: 0.321±0.000, Entropy: 1.569±0.000
+2026-07-30 09:28:22,135 - INFO - [Epoch 5] Prototypes - Off-diag sim: 0.000±0.000, Range: [0.000, 0.000]
+2026-07-30 09:28:22,135 - INFO - [Epoch 5] Memory - Total replay: 200, Distribution: [200, 0, 0, 0, 0]
+2026-07-30 09:28:22,182 - INFO - [Epoch 5] Grad norm: 4.4614 (over 130 params)
+2026-07-30 09:28:22,423 - INFO - 📚 Using 200 replay samples for Phase 2 training.
+2026-07-30 09:29:13,380 - INFO -   Epoch 6 | Average Contrastive Loss: 0.4434
+2026-07-30 09:29:13,380 - INFO - [Epoch 6] Pull sim: 0.6498, Pull dist: 0.3502, Pull violations: 0.0000, Push active: 0.0000
+2026-07-30 09:29:13,381 - INFO - [Epoch 6] Expert Util - Mean: 0.200, Std: 0.069, Min: 0.169, Max: 0.324
+2026-07-30 09:29:13,381 - INFO - [Epoch 6] Gating - Confidence: 0.324±0.000, Entropy: 1.567±0.000
+2026-07-30 09:29:13,382 - INFO - [Epoch 6] Prototypes - Off-diag sim: 0.000±0.000, Range: [0.000, 0.000]
+2026-07-30 09:29:13,382 - INFO - [Epoch 6] Memory - Total replay: 200, Distribution: [200, 0, 0, 0, 0]
+2026-07-30 09:29:13,405 - INFO - [Epoch 6] Grad norm: 4.4493 (over 130 params)
+2026-07-30 09:29:13,813 - INFO - 📚 Using 200 replay samples for Phase 2 training.
+2026-07-30 09:30:03,313 - INFO -   Epoch 7 | Average Contrastive Loss: 0.4287
+2026-07-30 09:30:03,313 - INFO - [Epoch 7] Pull sim: 0.6589, Pull dist: 0.3411, Pull violations: 0.0000, Push active: 0.0000
+2026-07-30 09:30:03,313 - INFO - [Epoch 7] Expert Util - Mean: 0.200, Std: 0.070, Min: 0.169, Max: 0.326
+2026-07-30 09:30:03,314 - INFO - [Epoch 7] Gating - Confidence: 0.326±0.000, Entropy: 1.566±0.000
+2026-07-30 09:30:03,315 - INFO - [Epoch 7] Prototypes - Off-diag sim: 0.000±0.000, Range: [0.000, 0.000]
+2026-07-30 09:30:03,315 - INFO - [Epoch 7] Memory - Total replay: 200, Distribution: [200, 0, 0, 0, 0]
+2026-07-30 09:30:03,403 - INFO - [Epoch 7] Grad norm: 4.4567 (over 130 params)
+2026-07-30 09:30:03,773 - INFO - 📚 Using 200 replay samples for Phase 2 training.
+2026-07-30 09:30:52,878 - INFO -   Epoch 8 | Average Contrastive Loss: 0.4140
+2026-07-30 09:30:52,878 - INFO - [Epoch 8] Pull sim: 0.6698, Pull dist: 0.3302, Pull violations: 0.0000, Push active: 0.0000
+2026-07-30 09:30:52,879 - INFO - [Epoch 8] Expert Util - Mean: 0.200, Std: 0.072, Min: 0.168, Max: 0.328
+2026-07-30 09:30:52,879 - INFO - [Epoch 8] Gating - Confidence: 0.328±0.000, Entropy: 1.564±0.000
+2026-07-30 09:30:52,880 - INFO - [Epoch 8] Prototypes - Off-diag sim: 0.000±0.000, Range: [0.000, 0.000]
+2026-07-30 09:30:52,880 - INFO - [Epoch 8] Memory - Total replay: 200, Distribution: [200, 0, 0, 0, 0]
+2026-07-30 09:30:52,905 - INFO - [Epoch 8] Grad norm: 4.4943 (over 130 params)
+2026-07-30 09:30:53,831 - INFO - 📚 Using 200 replay samples for Phase 2 training.
+2026-07-30 09:31:43,282 - INFO -   Epoch 9 | Average Contrastive Loss: 0.3987
+2026-07-30 09:31:43,282 - INFO - [Epoch 9] Pull sim: 0.6834, Pull dist: 0.3166, Pull violations: 0.0000, Push active: 0.0000
+2026-07-30 09:31:43,283 - INFO - [Epoch 9] Expert Util - Mean: 0.200, Std: 0.073, Min: 0.167, Max: 0.331
+2026-07-30 09:31:43,283 - INFO - [Epoch 9] Gating - Confidence: 0.331±0.000, Entropy: 1.562±0.000
+2026-07-30 09:31:43,284 - INFO - [Epoch 9] Prototypes - Off-diag sim: 0.000±0.000, Range: [0.000, 0.000]
+2026-07-30 09:31:43,284 - INFO - [Epoch 9] Memory - Total replay: 200, Distribution: [200, 0, 0, 0, 0]
+2026-07-30 09:31:43,309 - INFO - [Epoch 9] Grad norm: 4.4765 (over 130 params)
+2026-07-30 09:31:43,689 - INFO - 📚 Using 200 replay samples for Phase 2 training.
+2026-07-30 09:32:32,817 - INFO -   Epoch 10 | Average Contrastive Loss: 0.3836
+2026-07-30 09:32:32,817 - INFO - [Epoch 10] Pull sim: 0.6971, Pull dist: 0.3029, Pull violations: 0.0000, Push active: 0.0000
+2026-07-30 09:32:32,818 - INFO - [Epoch 10] Expert Util - Mean: 0.200, Std: 0.075, Min: 0.166, Max: 0.334
+2026-07-30 09:32:32,818 - INFO - [Epoch 10] Gating - Confidence: 0.334±0.000, Entropy: 1.560±0.000
+2026-07-30 09:32:32,819 - INFO - [Epoch 10] Prototypes - Off-diag sim: 0.000±0.000, Range: [0.000, 0.000]
+2026-07-30 09:32:32,819 - INFO - [Epoch 10] Memory - Total replay: 200, Distribution: [200, 0, 0, 0, 0]
+2026-07-30 09:32:32,869 - INFO - [Epoch 10] Grad norm: 4.4526 (over 130 params)
+2026-07-30 09:32:33,173 - INFO - 📚 Using 200 replay samples for Phase 2 training.
+2026-07-30 09:33:22,037 - INFO -   Epoch 11 | Average Contrastive Loss: 0.3672
+2026-07-30 09:33:22,037 - INFO - [Epoch 11] Pull sim: 0.7100, Pull dist: 0.2900, Pull violations: 0.0000, Push active: 0.0000
+2026-07-30 09:33:22,038 - INFO - [Epoch 11] Expert Util - Mean: 0.200, Std: 0.077, Min: 0.166, Max: 0.337
+2026-07-30 09:33:22,038 - INFO - [Epoch 11] Gating - Confidence: 0.337±0.000, Entropy: 1.558±0.000
+2026-07-30 09:33:22,039 - INFO - [Epoch 11] Prototypes - Off-diag sim: 0.000±0.000, Range: [0.000, 0.000]
+2026-07-30 09:33:22,039 - INFO - [Epoch 11] Memory - Total replay: 200, Distribution: [200, 0, 0, 0, 0]
+2026-07-30 09:33:22,063 - INFO - [Epoch 11] Grad norm: 4.4852 (over 130 params)
+2026-07-30 09:33:22,316 - INFO - 📚 Using 200 replay samples for Phase 2 training.
+2026-07-30 09:34:12,692 - INFO -   Epoch 12 | Average Contrastive Loss: 0.3503
+2026-07-30 09:34:12,692 - INFO - [Epoch 12] Pull sim: 0.7244, Pull dist: 0.2756, Pull violations: 0.0000, Push active: 0.0000
+2026-07-30 09:34:12,693 - INFO - [Epoch 12] Expert Util - Mean: 0.200, Std: 0.078, Min: 0.165, Max: 0.340
+2026-07-30 09:34:12,693 - INFO - [Epoch 12] Gating - Confidence: 0.340±0.000, Entropy: 1.556±0.000
+2026-07-30 09:34:12,694 - INFO - [Epoch 12] Prototypes - Off-diag sim: 0.000±0.000, Range: [0.000, 0.000]
+2026-07-30 09:34:12,694 - INFO - [Epoch 12] Memory - Total replay: 200, Distribution: [200, 0, 0, 0, 0]
+2026-07-30 09:34:12,767 - INFO - [Epoch 12] Grad norm: 4.4743 (over 130 params)
+2026-07-30 09:34:13,075 - INFO - 📚 Using 200 replay samples for Phase 2 training.
+2026-07-30 09:35:03,350 - INFO -   Epoch 13 | Average Contrastive Loss: 0.3329
+2026-07-30 09:35:03,351 - INFO - [Epoch 13] Pull sim: 0.7386, Pull dist: 0.2614, Pull violations: 0.0000, Push active: 0.0000
+2026-07-30 09:35:03,351 - INFO - [Epoch 13] Expert Util - Mean: 0.200, Std: 0.080, Min: 0.164, Max: 0.344
+2026-07-30 09:35:03,352 - INFO - [Epoch 13] Gating - Confidence: 0.344±0.000, Entropy: 1.553±0.000
+2026-07-30 09:35:03,352 - INFO - [Epoch 13] Prototypes - Off-diag sim: 0.000±0.000, Range: [0.000, 0.000]
+2026-07-30 09:35:03,353 - INFO - [Epoch 13] Memory - Total replay: 200, Distribution: [200, 0, 0, 0, 0]
+2026-07-30 09:35:03,376 - INFO - [Epoch 13] Grad norm: 4.4840 (over 130 params)
+2026-07-30 09:35:03,707 - INFO - 📚 Using 200 replay samples for Phase 2 training.
+2026-07-30 09:35:53,532 - INFO -   Epoch 14 | Average Contrastive Loss: 0.3157
+2026-07-30 09:35:53,532 - INFO - [Epoch 14] Pull sim: 0.7563, Pull dist: 0.2437, Pull violations: 0.0000, Push active: 0.0000
+2026-07-30 09:35:53,533 - INFO - [Epoch 14] Expert Util - Mean: 0.200, Std: 0.082, Min: 0.163, Max: 0.348
+2026-07-30 09:35:53,533 - INFO - [Epoch 14] Gating - Confidence: 0.348±0.000, Entropy: 1.550±0.000
+2026-07-30 09:35:53,534 - INFO - [Epoch 14] Prototypes - Off-diag sim: 0.000±0.000, Range: [0.000, 0.000]
+2026-07-30 09:35:53,534 - INFO - [Epoch 14] Memory - Total replay: 200, Distribution: [200, 0, 0, 0, 0]
+2026-07-30 09:35:53,558 - INFO - [Epoch 14] Grad norm: 4.4668 (over 130 params)
+2026-07-30 09:35:53,866 - INFO - 📚 Using 200 replay samples for Phase 2 training.
+2026-07-30 09:36:43,510 - INFO -   Epoch 15 | Average Contrastive Loss: 0.2983
+2026-07-30 09:36:43,510 - INFO - [Epoch 15] Pull sim: 0.7779, Pull dist: 0.2221, Pull violations: 0.0000, Push active: 0.0000
+2026-07-30 09:36:43,511 - INFO - [Epoch 15] Expert Util - Mean: 0.200, Std: 0.085, Min: 0.162, Max: 0.352
+2026-07-30 09:36:43,511 - INFO - [Epoch 15] Gating - Confidence: 0.352±0.000, Entropy: 1.547±0.000
+2026-07-30 09:36:43,512 - INFO - [Epoch 15] Prototypes - Off-diag sim: 0.000±0.000, Range: [0.000, 0.000]
+2026-07-30 09:36:43,512 - INFO - [Epoch 15] Memory - Total replay: 200, Distribution: [200, 0, 0, 0, 0]
+2026-07-30 09:36:43,560 - INFO - [Epoch 15] Grad norm: 4.4811 (over 130 params)
+2026-07-30 09:36:44,425 - INFO - 🔄 Updated DG prototypes for 1 trained experts
+2026-07-30 09:36:44,425 - INFO - ✅ Final prototype update after Phase 2 complete

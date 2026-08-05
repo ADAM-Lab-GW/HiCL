@@ -1,0 +1,44 @@
+2026-07-30 09:02:48,174 - INFO - 🚀 TRAIN + ANALYZE DG-GATED MODEL (2-Phase Contrastive)
+2026-07-30 09:02:48,174 - INFO - ================================================================================
+2026-07-30 09:03:20,638 - INFO - Task 0 ([0, 1]): 10000 train, 2000 test samples
+2026-07-30 09:03:51,245 - INFO - Task 1 ([2, 3]): 10000 train, 2000 test samples
+2026-07-30 09:04:21,826 - INFO - Task 2 ([4, 5]): 10000 train, 2000 test samples
+2026-07-30 09:04:52,385 - INFO - Task 3 ([6, 7]): 10000 train, 2000 test samples
+2026-07-30 09:05:22,965 - INFO - Task 4 ([8, 9]): 10000 train, 2000 test samples
+2026-07-30 09:05:26,192 - INFO - 🧠 Using LeNet-style feature extractor with Grid Cells.
+2026-07-30 09:05:26,211 - INFO -   - LeNet feature extractor output dimension: 4096
+2026-07-30 09:05:34,151 - INFO - 🔧 Initialized DG-Gated Hippocampal MoE with 5 experts, 2 classes per task
+2026-07-30 09:05:34,152 - INFO - 🔧 Target DG sparsity: 0.03, Memory size per task: 200
+2026-07-30 09:05:34,152 - INFO - 🔧 EMA parameters: warmup=30, momentum=0.9
+2026-07-30 09:05:34,165 - INFO - 🔧 Feature extractor output dimension: 4096 (256 channels * spatial dims)
+2026-07-30 09:05:34,166 - INFO - 🔧 Using standard feature extractor
+2026-07-30 09:05:35,394 - INFO - 🔧 Total model parameters: 44,039,498
+2026-07-30 09:05:35,394 - INFO - 🔧 Expert parameters: 43,137,920 (8,627,584.0 per expert)
+2026-07-30 09:05:35,399 - INFO - Model parameters (DG-Gated): 44,039,498
+2026-07-30 09:05:35,399 - INFO - 🌡️ Set gating temperature to: 0.03
+2026-07-30 09:05:35,399 - INFO - 🚪 Set gating strategy to: soft
+2026-07-30 09:05:35,399 - INFO - 
+================================================================================
+2026-07-30 09:05:35,399 - INFO - PHASE 1: TRAINING HIPPOCAMPAL EXPERTS WITH DISTILLATION
+2026-07-30 09:05:35,399 - INFO - ================================================================================
+2026-07-30 09:05:35,400 - INFO - 🔧 Using EWC with lambda=1000.0 to prevent forgetting
+2026-07-30 09:05:35,402 - INFO - 
+Training Expert 0...
+2026-07-30 09:05:35,402 - INFO -   Trainable parameters: 19,630,274
+2026-07-30 09:05:35,675 - INFO - 🔧 Initialized online prototype tracking: 10 classes, 512 DG dims
+2026-07-30 09:08:35,748 - INFO -   Epoch 12 | Test Acc: 97.80% (Best: 97.80%)
+2026-07-30 09:08:35,768 - INFO - 🔧 EWC Enhanced: Initializing Fisher info for 90 parameter groups (19,630,274 total parameters)
+2026-07-30 09:08:38,489 - INFO - 🔧 EWC Enhanced: Computed Fisher info for 81/90 parameter groups
+2026-07-30 09:08:38,489 - INFO - 🔧 EWC Enhanced: Total Fisher parameters: 19,630,274
+2026-07-30 09:08:38,696 - INFO - 🔧 EWC Fisher Analysis:
+2026-07-30 09:08:38,697 - INFO -   - Total parameters: 19,630,274
+2026-07-30 09:08:38,697 - INFO -   - Non-zero Fisher values: 2,632,966
+2026-07-30 09:08:38,697 - INFO -   - Coverage ratio: 0.134
+2026-07-30 09:08:38,697 - INFO -   - Fisher value range: [0.00e+00, 7.08e-04]
+2026-07-30 09:08:38,698 - INFO -   - Fisher mean/std: 3.13e-08/1.34e-06
+2026-07-30 09:08:38,698 - INFO -   - feature_extractor: 298,843/375,872 (0.795)
+2026-07-30 09:08:38,698 - INFO -   - hippocampal_experts: 2,333,865/19,254,144 (0.121)
+2026-07-30 09:08:38,698 - INFO -   - output_layers: 258/258 (1.000)
+2026-07-30 09:08:38,714 - INFO - 🔧 EWC: Computed Fisher importance for expert 0 (90 parameter groups, 19,630,274 total parameters)
+2026-07-30 09:08:38,714 - INFO - 🔒 Frozen prototypes for expert 0 classes: [0, 1]
+2026-07-30 09:08:38,715 - INFO - 🔄 Updated DG prototypes for 1 trained experts
