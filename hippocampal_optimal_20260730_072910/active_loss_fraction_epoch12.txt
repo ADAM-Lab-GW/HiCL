@@ -1,4 +1,4 @@
-Pull mean similarity: 0.9859
-Pull mean distance: 0.0141
+Pull mean similarity: 0.9947
+Pull mean distance: 0.0053
 Pull violations (<0.8): 0.0000
 Push active fraction: 1.0000
