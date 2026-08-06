@@ -1,0 +1,101 @@
+2026-08-05 20:01:56,778 - INFO - 🚀 TRAIN + ANALYZE DG-GATED MODEL (2-Phase Contrastive)
+2026-08-05 20:01:56,778 - INFO - ================================================================================
+2026-08-05 20:01:56,809 - INFO - 🖼️ Loaded custom two-class RGB dataset
+2026-08-05 20:01:56,809 - INFO -   Root: /home/adamlab/repos/HiCL/eventSym
+2026-08-05 20:01:56,809 - INFO -   Classes: {0: 'elevator', 1: 'restroom'}
+2026-08-05 20:01:56,810 - INFO -   Train samples: 622
+2026-08-05 20:01:56,810 - INFO -   Test samples: 156
+2026-08-05 20:01:56,810 - INFO -   Model input: RGB 32×32 (3072 flattened values)
+2026-08-05 20:01:57,490 - INFO - 🧠 Using LeNet-style feature extractor with Grid Cells.
+2026-08-05 20:01:57,507 - INFO -   - LeNet feature extractor output dimension: 4096
+2026-08-05 20:01:59,260 - INFO - 🔧 Initialized DG-Gated Hippocampal MoE with 1 experts, 2 classes per task
+2026-08-05 20:01:59,260 - INFO - 🔧 Target DG sparsity: 0.03, Memory size per task: 200
+2026-08-05 20:01:59,260 - INFO - 🔧 EMA parameters: warmup=30, momentum=0.9
+2026-08-05 20:01:59,261 - INFO - 🔧 StandardFeatureExtractor disabled; passing raw inputs directly to DG as 3072-D vectors (3×32×32).
+2026-08-05 20:01:59,374 - INFO - 🔧 Total model parameters: 4,298,498
+2026-08-05 20:01:59,374 - INFO - 🔧 Expert parameters: 3,904,896 (3,904,896.0 per expert)
+2026-08-05 20:01:59,376 - INFO - Model parameters (DG-Gated): 4,298,498
+2026-08-05 20:01:59,376 - INFO - 🌡️ Set gating temperature to: 0.03
+2026-08-05 20:01:59,376 - INFO - 🚪 Set gating strategy to: soft
+2026-08-05 20:01:59,376 - INFO - 
+================================================================================
+2026-08-05 20:01:59,376 - INFO - PHASE 1: TRAINING HIPPOCAMPAL EXPERTS WITH DISTILLATION
+2026-08-05 20:01:59,376 - INFO - ================================================================================
+2026-08-05 20:01:59,376 - INFO - 🔧 Using EWC with lambda=1000.0 to prevent forgetting
+2026-08-05 20:01:59,377 - INFO - 
+Training Expert 0...
+2026-08-05 20:01:59,377 - INFO -   Trainable parameters: 3,905,154
+2026-08-05 20:01:59,538 - INFO - 🔧 Initialized online prototype tracking: 2 classes, 512 DG dims
+2026-08-05 20:02:26,466 - INFO -   Epoch 12 | Test Acc: 100.00% (Best: 100.00%)
+2026-08-05 20:02:26,469 - INFO - 🔧 EWC Enhanced: Initializing Fisher info for 24 parameter groups (3,905,154 total parameters)
+2026-08-05 20:02:29,599 - INFO - 🔧 EWC Enhanced: Computed Fisher info for 0/24 parameter groups
+2026-08-05 20:02:29,600 - INFO - 🔧 EWC Enhanced: Total Fisher parameters: 3,905,154
+2026-08-05 20:02:29,647 - INFO - 🔧 EWC Fisher Analysis:
+2026-08-05 20:02:29,647 - INFO -   - Total parameters: 3,905,154
+2026-08-05 20:02:29,647 - INFO -   - Non-zero Fisher values: 0
+2026-08-05 20:02:29,647 - INFO -   - Coverage ratio: 0.000
+2026-08-05 20:02:29,647 - INFO -   - Fisher value range: [0.00e+00, 1.20e-10]
+2026-08-05 20:02:29,647 - INFO -   - Fisher mean/std: 2.79e-15/3.27e-13
+2026-08-05 20:02:29,647 - INFO -   - hippocampal_experts: 0/3,904,896 (0.000)
+2026-08-05 20:02:29,647 - INFO -   - output_layers: 0/258 (0.000)
+2026-08-05 20:02:29,647 - INFO - 🔧 EWC: Computed Fisher importance for expert 0 (24 parameter groups, 3,905,154 total parameters)
+2026-08-05 20:02:29,647 - INFO - 🔒 Frozen prototypes for expert 0 classes: [0, 1]
+2026-08-05 20:02:29,648 - INFO - 🔄 Updated DG prototypes for 1 trained experts
+2026-08-05 20:03:01,876 - INFO - ✅ Online EMA prototypes computed during Phase 1 training
+2026-08-05 20:03:01,877 - INFO -  POST PHASE 1 DG PATTERN SEPARATION DIAGNOSTIC
+2026-08-05 20:03:01,877 - INFO - 
+🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬
+2026-08-05 20:03:01,877 - INFO - 🔬 DG PATTERN SEPARATION DIAGNOSTIC
+2026-08-05 20:03:01,877 - INFO - 🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬
+2026-08-05 20:03:02,129 - INFO - 📊 Collected 156 samples across 1 experts
+2026-08-05 20:03:02,130 - INFO - 📊 DG embedding dimension: 512
+2026-08-05 20:03:02,134 - WARNING - ⚠️ Failed to compute Silhouette Score: Number of labels is 1. Valid values are 2 to n_samples - 1 (inclusive)
+2026-08-05 20:03:02,135 - WARNING - ⚠️ Failed to compute Davies–Bouldin Index: Number of labels is 1. Valid values are 2 to n_samples - 1 (inclusive)
+2026-08-05 20:03:02,171 - INFO - ✅ Mean Intra-Cluster Dist: 0.8559
+2026-08-05 20:03:02,171 - INFO - ✅ Mean Inter-Cluster Dist: nan
+2026-08-05 20:03:02,171 - WARNING - ⚠️ Could not compute separation ratio
+2026-08-05 20:03:02,172 - INFO - 🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬
+2026-08-05 20:03:02,172 - INFO - 🔬 DG PATTERN SEPARATION DIAGNOSTIC COMPLETE
+2026-08-05 20:03:02,172 - INFO - 🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬
+2026-08-05 20:03:02,174 - INFO - [phase1] Prototype norm: mean=13.768, std=0.000
+2026-08-05 20:03:02,509 - WARNING - ⚠️ Failed to save Phase 1 prototype plots: zero-size array to reduction operation minimum which has no identity
+2026-08-05 20:03:02,509 - INFO - ℹ️ Skipping Phase 2 expert-contrastive tuning: the current experiment has one expert, so expert-to-expert separation is not defined. Class separation is still measured before and after the DG by analyze_dg_input_output_features().
+2026-08-05 20:03:02,510 - INFO - 
+================================================================================
+2026-08-05 20:03:02,510 - INFO - FINAL DG-GATED PERFORMANCE EVALUATION
+2026-08-05 20:03:02,510 - INFO - ================================================================================
+2026-08-05 20:03:02,793 - INFO - Task-IL Expert 0 (classes [0, 1]): 100.00%
+2026-08-05 20:03:03,139 - INFO - === PER-CLASS CONFUSION MATRIX (TASK-IL) ===
+[[83  0]
+ [ 0 73]]
+2026-08-05 20:03:03,139 - INFO - === PER-CLASS CONFUSION MATRIX (CLASS-IL) ===
+[[83  0]
+ [ 0 73]]
+2026-08-05 20:03:03,139 - INFO - === PER-CLASS STATS (TASK-IL) ===
+{0: {'avg_loss': 8.172241905413102e-06, 'avg_conf': 0.9999918341636658, 'count': 83}, 1: {'avg_loss': 1.6649970348225906e-05, 'avg_conf': 0.9999832510948181, 'count': 73}}
+2026-08-05 20:03:03,139 - INFO - === PER-CLASS STATS (CLASS-IL) ===
+{0: {'avg_loss': 8.172242814907804e-06, 'avg_conf': 0.9999918341636658, 'count': 83}, 1: {'avg_loss': 1.6649970348225906e-05, 'avg_conf': 0.9999833703041077, 'count': 73}}
+2026-08-05 20:03:03,139 - INFO - === ROUTING COUNTS (CLASS-IL) ===
+{0: {0: 83}, 1: {0: 73}}
+2026-08-05 20:03:03,140 - INFO - 
+FINAL RESULTS:
+2026-08-05 20:03:03,140 - INFO -   - Task-IL Accuracy (Oracle): 100.00%
+2026-08-05 20:03:03,140 - INFO -   - Class-IL Accuracy (DG-Gated): 100.00%
+2026-08-05 20:03:03,142 - INFO - 
+🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬
+2026-08-05 20:03:03,142 - INFO - 🔬 ANALYZING THE DG-GATED MODEL
+2026-08-05 20:03:03,143 - INFO - 🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬🔬
+2026-08-05 20:03:09,888 - INFO - 📊 DG-Gated model analysis saved!
+2026-08-05 20:03:09,889 - INFO - ℹ️ Skipping the multi-expert intra/inter-task deep-dive plot because only one expert/task is present.
+2026-08-05 20:03:09,890 - INFO - Prototype drift from baseline to phase2: mean=13.8492, min=13.8492, max=13.8492
+2026-08-05 20:03:10,593 - INFO - ✅ Prototype drift analysis completed
+2026-08-05 20:03:17,825 - INFO - 
+🎉 TRAINING + ANALYSIS OF DG-GATED MODEL COMPLETE!
+2026-08-05 20:03:17,825 - INFO - 💾 Results saved in: hippocampal_optimal_20260805_200156/
+2026-08-05 20:03:17,825 - INFO - 📊 Analysis plots: hippocampal_optimal_20260805_200156/dg_gated_analysis/
+2026-08-05 20:03:17,825 - INFO - 📊 Deep-dive plots: hippocampal_optimal_20260805_200156/DG_Deep_Dive_Analysis.png
+2026-08-05 20:03:17,825 - INFO - 📋 Report: hippocampal_optimal_20260805_200156/DG_Gated_Analysis_Report.md
+2026-08-05 20:03:18,868 - INFO - === TRAIN CLASS COUNTS ===
+{0: 332, 1: 290}
+2026-08-05 20:03:18,868 - INFO - === TEST CLASS COUNTS ===
+{0: 83, 1: 73}
