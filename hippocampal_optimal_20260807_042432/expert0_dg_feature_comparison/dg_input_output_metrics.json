@@ -1,0 +1,28 @@
+{
+    "expert_id": 0,
+    "num_samples": 200,
+    "classes": [
+        0,
+        1
+    ],
+    "normalization_used": true,
+    "features_entering_dg_dimension": 1024,
+    "features_leaving_dg_dimension": 512,
+    "dg_input_metrics": {
+        "silhouette_score": 0.003258658340200782,
+        "davies_bouldin_index": 14.991030910814136,
+        "mean_intra_class_distance": 1.409445881843567,
+        "mean_inter_class_distance": 1.414036750793457,
+        "separation_ratio": 1.0032572154837796
+    },
+    "dg_output_metrics": {
+        "silhouette_score": 0.03749125450849533,
+        "davies_bouldin_index": 4.774672974814143,
+        "mean_intra_class_distance": 1.3543951511383057,
+        "mean_inter_class_distance": 1.4070980548858643,
+        "separation_ratio": 1.0389125017933387
+    },
+    "silhouette_change": 0.03423259616829455,
+    "davies_bouldin_improvement": 10.216357935999993,
+    "separation_ratio_change": 0.035655286309559164
+}

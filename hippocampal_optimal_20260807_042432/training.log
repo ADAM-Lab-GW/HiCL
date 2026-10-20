@@ -1,0 +1,47 @@
+2026-08-07 04:24:32,207 - INFO - ================================================================================
+2026-08-07 04:24:32,366 - INFO -   - LeNet feature extractor output dimension: 4096
+2026-08-07 04:24:32,630 - INFO - Model parameters (DG-Gated): 1,939,202
+2026-08-07 04:24:32,631 - INFO - 
+================================================================================
+2026-08-07 04:24:32,632 - INFO - PHASE 1: TRAINING HIPPOCAMPAL EXPERTS WITH DISTILLATION
+2026-08-07 04:24:32,632 - INFO - ================================================================================
+2026-08-07 04:24:32,633 - INFO - 
+Training Expert 0...
+2026-08-07 04:24:32,634 - INFO -   Trainable parameters: 1,808,002
+2026-08-07 04:24:36,022 - INFO -   Epoch 12 | Test Acc: 100.00% (Best: 100.00%)
+2026-08-07 04:24:36,233 - INFO -   - Total parameters: 1,808,002
+2026-08-07 04:24:36,233 - INFO -   - Non-zero Fisher values: 0
+2026-08-07 04:24:36,233 - INFO -   - Coverage ratio: 0.000
+2026-08-07 04:24:36,234 - INFO -   - Fisher value range: [0.00e+00, 3.05e-12]
+2026-08-07 04:24:36,234 - INFO -   - Fisher mean/std: 1.58e-16/1.21e-14
+2026-08-07 04:24:36,234 - INFO -   - hippocampal_experts: 0/1,807,744 (0.000)
+2026-08-07 04:24:36,234 - INFO -   - output_layers: 0/258 (0.000)
+2026-08-07 04:24:46,640 - INFO -  POST PHASE 1 DG PATTERN SEPARATION DIAGNOSTIC
+2026-08-07 04:24:46,671 - INFO - [phase1] Prototype norm: mean=3.647, std=0.000
+2026-08-07 04:24:46,815 - INFO - [phase2] Prototype norm: mean=3.647, std=0.000
+2026-08-07 04:24:46,924 - INFO - 
+================================================================================
+2026-08-07 04:24:46,924 - INFO - FINAL DG-GATED PERFORMANCE EVALUATION
+2026-08-07 04:24:46,925 - INFO - ================================================================================
+2026-08-07 04:24:46,954 - INFO - Task-IL Expert 0 (classes [0, 1]): 100.00%
+2026-08-07 04:24:46,984 - INFO - === PER-CLASS CONFUSION MATRIX (TASK-IL) ===
+[[103   0]
+ [  0  97]]
+2026-08-07 04:24:46,984 - INFO - === PER-CLASS CONFUSION MATRIX (CLASS-IL) ===
+[[103   0]
+ [  0  97]]
+2026-08-07 04:24:46,984 - INFO - === PER-CLASS STATS (TASK-IL) ===
+{0: {'avg_loss': 4.2093470256077126e-06, 'avg_conf': 0.9999958276748657, 'count': 103}, 1: {'avg_loss': 7.979564543347806e-06, 'avg_conf': 0.9999919533729553, 'count': 97}}
+2026-08-07 04:24:46,984 - INFO - === PER-CLASS STATS (CLASS-IL) ===
+{0: {'avg_loss': 4.209346116113011e-06, 'avg_conf': 0.9999958276748657, 'count': 103}, 1: {'avg_loss': 7.979564543347806e-06, 'avg_conf': 0.9999920725822449, 'count': 97}}
+2026-08-07 04:24:46,984 - INFO - === ROUTING COUNTS (CLASS-IL) ===
+{0: {0: 103}, 1: {0: 97}}
+2026-08-07 04:24:46,984 - INFO - 
+FINAL RESULTS:
+2026-08-07 04:24:46,985 - INFO -   - Task-IL Accuracy (Oracle): 100.00%
+2026-08-07 04:24:46,985 - INFO -   - Class-IL Accuracy (DG-Gated): 100.00%
+2026-08-07 04:24:48,704 - INFO - Prototype drift from baseline to phase2: mean=3.8802, min=3.8802, max=3.8802
+2026-08-07 04:24:50,444 - INFO - === TRAIN CLASS COUNTS ===
+{0: 501, 1: 499}
+2026-08-07 04:24:50,444 - INFO - === TEST CLASS COUNTS ===
+{0: 103, 1: 97}
