@@ -1,0 +1,173 @@
+{
+  "config": {
+    "grid_size": 32,
+    "n_base_patterns": 120,
+    "pattern_mode": "family",
+    "n_families": 12,
+    "family_spread": 3,
+    "corruption_levels": [
+      0.0,
+      0.02,
+      0.05,
+      0.1,
+      0.2
+    ],
+    "variants_per_level": 12,
+    "heldout_corruption_levels": [
+      0.15
+    ],
+    "heldout_variants_per_level": 12,
+    "descriptor": "rowcol",
+    "sheet_h": 64,
+    "sheet_w": 64,
+    "toroidal": true,
+    "sparsity": 0.02,
+    "sigma": null,
+    "target_overlap": 0.1,
+    "t_min": 5.0,
+    "t_max": 40.0,
+    "latency_jitter": 0.05,
+    "som_epochs": 200,
+    "som_lr0": 0.5,
+    "som_sigma0": null,
+    "seed": 0
+  },
+  "feasibility": {
+    "dg_dim": 4096,
+    "k_active": 82,
+    "sparsity": 0.02,
+    "sigma": 8.079,
+    "effective_pool_size": 820.0,
+    "expected_overlap_ratio": 0.1,
+    "expected_jaccard_same_neighbourhood": 0.0526,
+    "n_quasi_independent_neighbourhoods": 5.0,
+    "n_base_patterns": 120,
+    "note": "Quasi-independent neighbourhoods ~= 1/(10*sparsity) when target_overlap=0.1, INDEPENDENT of dg_dim. Enlarging the sheet does not buy more separable neighbourhoods -- only lowering sparsity does. Centroid position is still resolvable far more finely than pool separation, so graded topography survives well past this count."
+  },
+  "concentration": {
+    "dist_mean": 11.214746579679538,
+    "dist_sd": 1.817988420444719,
+    "dist_cv": 0.16210695511734924,
+    "verdict": "graded structure present"
+  },
+  "target": {
+    "label": "target codes",
+    "n_codes": 120,
+    "dg_dim": 4096,
+    "k": 82,
+    "active_fraction": 0.02001953125,
+    "jaccard_mean": 0.009864224870751882,
+    "jaccard_p95": 0.0379746835443038,
+    "jaccard_max": 0.11564625850340136,
+    "topography_spearman": 0.4474038723812248,
+    "dead_units": 318,
+    "dead_fraction": 0.07763671875,
+    "hub_units": 0,
+    "latency_rank_corr_mean": -0.15146149368838444,
+    "n_pairs_sharing_3plus_units": 476
+  },
+  "matched_k": {
+    "label": "matched-k random",
+    "n_codes": 120,
+    "dg_dim": 4096,
+    "k": 82,
+    "active_fraction": 0.02001953125,
+    "jaccard_mean": 0.10635908903535381,
+    "jaccard_p95": 0.35537190082644626,
+    "jaccard_max": 0.7263157894736842,
+    "topography_spearman": 0.05711627425675109,
+    "dead_units": 2958,
+    "dead_fraction": 0.72216796875,
+    "hub_units": 239,
+    "latency_rank_corr_mean": 0.11339255184373458,
+    "n_pairs_sharing_3plus_units": 1770
+  },
+  "curve_target": {
+    "r_in": [
+      0.14005435965444676,
+      0.20804079521728228,
+      0.2757920899496117,
+      0.3369537479682588,
+      0.4048468635311882,
+      0.4742476578849577,
+      0.5466836606717105,
+      0.6189358152883694,
+      0.6981702919361239,
+      0.7733631450853368,
+      0.8401920707420163,
+      0.9099078541819828
+    ],
+    "r_out": [
+      0.007174901164629472,
+      0.00609951263406832,
+      0.006813538386337315,
+      0.0069793488806171615,
+      0.012572240475389546,
+      0.016421377579505597,
+      0.023100795840325743,
+      0.03299666214704423,
+      0.03118436745196869,
+      0.03210789301566665,
+      0.04031952511955319,
+      0.04505723121538378
+    ],
+    "n_pairs": [
+      84,
+      622,
+      2684,
+      2471,
+      493,
+      150,
+      81,
+      24,
+      99,
+      209,
+      151,
+      69
+    ]
+  },
+  "curve_matched_k": {
+    "r_in": [
+      0.14005435965444676,
+      0.20804079521728228,
+      0.2757920899496117,
+      0.3369537479682588,
+      0.4048468635311882,
+      0.4742476578849577,
+      0.5466836606717105,
+      0.6189358152883694,
+      0.6981702919361239,
+      0.7733631450853368,
+      0.8401920707420163,
+      0.9099078541819828
+    ],
+    "r_out": [
+      0.03158060262143936,
+      0.049898840390426025,
+      0.06892165089437877,
+      0.08987488282129809,
+      0.1162290126518962,
+      0.15160198959241494,
+      0.20059089289075963,
+      0.25812244548983476,
+      0.30770292711139,
+      0.36772024037457607,
+      0.4472599000024023,
+      0.5694307846281664
+    ],
+    "n_pairs": [
+      84,
+      622,
+      2684,
+      2471,
+      493,
+      150,
+      81,
+      24,
+      99,
+      209,
+      151,
+      69
+    ]
+  }
+}

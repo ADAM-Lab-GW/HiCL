@@ -1,0 +1,87 @@
+{
+  "config": {
+    "grid_size": 32,
+    "n_base_patterns": 120,
+    "pattern_mode": "family",
+    "n_families": 12,
+    "family_spread": 3,
+    "corruption_levels": [
+      0.0,
+      0.02,
+      0.05,
+      0.1,
+      0.2
+    ],
+    "variants_per_level": 12,
+    "heldout_corruption_levels": [
+      0.15
+    ],
+    "heldout_variants_per_level": 12,
+    "descriptor": "rowcol",
+    "sheet_h": 64,
+    "sheet_w": 64,
+    "toroidal": true,
+    "sparsity": 0.005,
+    "sigma": null,
+    "target_overlap": 0.1,
+    "t_min": 5.0,
+    "t_max": 40.0,
+    "latency_jitter": 0.05,
+    "som_epochs": 200,
+    "som_lr0": 0.5,
+    "som_sigma0": null,
+    "seed": 0
+  },
+  "sweep_epochs": 20,
+  "corruption": 0.0,
+  "rows": [
+    {
+      "n_base": 60,
+      "k": 21,
+      "sigma": 4.09,
+      "nn_spacing": 6.04,
+      "centroid_err": 4.774,
+      "err_over_spacing": 0.79,
+      "recall": 0.4008,
+      "identification": 0.45,
+      "ident_chance": 0.0167,
+      "best_epoch": 9
+    },
+    {
+      "n_base": 120,
+      "k": 21,
+      "sigma": 4.09,
+      "nn_spacing": 3.87,
+      "centroid_err": 4.968,
+      "err_over_spacing": 1.284,
+      "recall": 0.3202,
+      "identification": 0.3,
+      "ident_chance": 0.0083,
+      "best_epoch": 6
+    },
+    {
+      "n_base": 180,
+      "k": 21,
+      "sigma": 4.09,
+      "nn_spacing": 2.85,
+      "centroid_err": 6.938,
+      "err_over_spacing": 2.432,
+      "recall": 0.2267,
+      "identification": 0.1667,
+      "ident_chance": 0.0056,
+      "best_epoch": 5
+    },
+    {
+      "n_base": 240,
+      "k": 21,
+      "sigma": 4.09,
+      "nn_spacing": 2.48,
+      "centroid_err": 5.883,
+      "err_over_spacing": 2.376,
+      "recall": 0.2024,
+      "identification": 0.1708,
+      "ident_chance": 0.0042,
+      "best_epoch": 4
+    }
+  ]
+}

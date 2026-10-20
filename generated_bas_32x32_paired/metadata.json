@@ -1,0 +1,68 @@
+{
+  "dataset": "Bars-and-Stripes 32x32 paired image/event dataset",
+  "train_samples": 1000,
+  "test_samples": 200,
+  "height": 32,
+  "width": 32,
+  "image_channels": 1,
+  "image_generation_noise_std": 0.0,
+  "seed": 42,
+  "event_generation": {
+    "type": "synthetic contrast-threshold DVS with balanced micro-saccades",
+    "contrast_threshold_log_intensity": 0.2,
+    "duration_us": 800000,
+    "motion_pixels": 1,
+    "trajectory": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        -1,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        -1
+      ],
+      [
+        0,
+        0
+      ]
+    ],
+    "polarity": {
+      "0": "OFF",
+      "1": "ON"
+    },
+    "timestamp_unit": "microseconds",
+    "pixel_neuron_id": "y*32+x (0..1023)",
+    "polarity_neuron_id": "polarity*1024+y*32+x (0..2047)",
+    "max_events_per_pixel_per_transition": 1
+  },
+  "labels": {
+    "0": "Bars",
+    "1": "Stripes"
+  },
+  "train_event_count_total": 1997056,
+  "test_event_count_total": 406528
+}

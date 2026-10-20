@@ -111,7 +111,7 @@ class BarsAndStripesTorchDataset(Dataset):
         return self.images[index], self.labels[index]
 
 
-def generate_xanadu_bars_and_stripes(n_samples, height=32, width=32, noise_std=0.5):
+def generate_xanadu_bars_and_stripes(n_samples, height=32, width=32, noise_std=0):
     """
     Reproduce Xanadu's official qml-benchmarks Bars-and-Stripes generator.
 
@@ -160,8 +160,8 @@ def _translate_event_frame(frame, dx, dy):
 
 def bas_image_to_event_stream(
     image,
-    contrast_threshold=0.35,
-    duration_us=80000,
+    contrast_threshold=0.2,
+    duration_us=800000,
     motion_pixels=1,
     min_intensity=0.05,
 ):
@@ -277,18 +277,18 @@ def bas_image_to_event_stream(
         y = np.empty(0, dtype=np.int16)
         polarity = np.empty(0, dtype=np.int8)
 
-    pixel_neuron_id = (y.astype(np.int32) * 32 + x.astype(np.int32))
-    polarity_neuron_id = (
-        polarity.astype(np.int32) * (32 * 32) + pixel_neuron_id
-    )
+    # pixel_neuron_id = (y.astype(np.int32) * 32 + x.astype(np.int32))
+    # polarity_neuron_id = (
+    #     polarity.astype(np.int32) * (32 * 32) + pixel_neuron_id
+    # )
 
     return {
         "timestamp_us": timestamp_us,
         "x": x,
         "y": y,
         "polarity": polarity,
-        "pixel_neuron_id": pixel_neuron_id,
-        "polarity_neuron_id": polarity_neuron_id,
+        # "pixel_neuron_id": pixel_neuron_id,
+        # "polarity_neuron_id": polarity_neuron_id,
     }
 
 
@@ -340,8 +340,8 @@ def export_bas_event_split(
             if len(events["timestamp_us"]) == 0:
                 with open(event_path, "w", encoding="utf-8") as f:
                     f.write(
-                        "timestamp_us,x,y,polarity,pixel_neuron_id,"
-                        "polarity_neuron_id\n"
+                        "timestamp_us,x,y,polarity\n"
+                        # "pixel_neuron_id,polarity_neuron_id\n"
                     )
             else:
                 event_matrix = np.column_stack([
@@ -349,19 +349,19 @@ def export_bas_event_split(
                     events["x"],
                     events["y"],
                     events["polarity"],
-                    events["pixel_neuron_id"],
-                    events["polarity_neuron_id"],
+                    # events["pixel_neuron_id"],
+                    # events["polarity_neuron_id"],
                 ])
                 np.savetxt(
                     event_path,
                     event_matrix,
                     delimiter=",",
                     header=(
-                        "timestamp_us,x,y,polarity,pixel_neuron_id,"
-                        "polarity_neuron_id"
+                        "t,x,y,p"
+                        # "pixel_neuron_id,polarity_neuron_id"
                     ),
                     comments="",
-                    fmt=["%.3f", "%d", "%d", "%d", "%d", "%d"],
+                    fmt=["%.3f", "%d", "%d", "%d"],
                 )
 
             num_events = int(len(events["timestamp_us"]))
@@ -5317,10 +5317,10 @@ def parse_arguments():
     parser.add_argument('--save_dir', type=str, default=None)
     parser.add_argument('--bas_source_size', type=int, default=32, help='BAS source grid size; keep at 32 to reproduce the native published 32x32 benchmark')
     parser.add_argument('--num_workers', type=int, default=0, help='PyTorch DataLoader workers')
-    parser.add_argument('--bas_noise_std', type=float, default=0.5, help='Gaussian noise used for BAS image generation')
+    parser.add_argument('--bas_noise_std', type=float, default=0, help='Gaussian noise used for BAS image generation')
     parser.add_argument('--event_output_dir', type=str, default='./generated_bas_32x32_paired', help='Directory for paired event CSV files and image arrays')
-    parser.add_argument('--event_contrast_threshold', type=float, default=0.35, help='Synthetic DVS log-intensity contrast threshold')
-    parser.add_argument('--event_duration_us', type=int, default=80000, help='Duration of each synthetic event recording in microseconds')
+    parser.add_argument('--event_contrast_threshold', type=float, default=0.2, help='Synthetic DVS log-intensity contrast threshold')
+    parser.add_argument('--event_duration_us', type=int, default=800000, help='Duration of each synthetic event recording in microseconds')
     parser.add_argument('--event_motion_pixels', type=int, default=1, help='Micro-saccade amplitude in pixels')
     parser.add_argument('--no_event_generation', action='store_true', help='Disable creation of the paired event-based BAS dataset')
 
